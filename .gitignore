@@ -1,0 +1,29 @@
+# © Copyright IBM Corporation 2025
+# SPDX-License-Identifier: Apache-2.0
+
+
+node_modules
+deploy/output
+app/version.json
+app/docs
+app/sdk
+.idea
+API_key.json
+*.log
+package-lock.json
+.DS_Store
+coverage
+# Ignore cypress example files 
+cypress/e2e/1-getting-started
+cypress/e2e/2-advanced-examples
+#ignore snapshots
+app/test/components/inference/__snapshots__
+app/test/components/dataset-factory/__snapshots__
+
+*.env
+!dev-template.env
+
+.DS_Store
+site/
+venv/
+.env

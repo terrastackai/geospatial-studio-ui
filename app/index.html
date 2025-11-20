@@ -1,0 +1,176 @@
+<!--
+© Copyright IBM Corporation 2025
+SPDX-License-Identifier: Apache-2.0
+-->
+
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title></title>
+    <link rel="shortcut icon" href="/images/favicon.ico" />
+
+    <link href="/fonts/IBM_Plex_Sans/plex.css" rel="stylesheet" />
+
+    <link rel="stylesheet" href="/themes/g100.css" />
+    <link rel="stylesheet" href="index.css" />
+
+    <script
+      type="module"
+      src="/js/libs/carbon-web-components/ui-shell.min.js"
+    ></script>
+    <script src="/js/libs/d3/d3.min.js" defer></script>
+    <script src="/js/libs/leaflet/leaflet.js" defer></script>
+    <script src="/js/libs/leaflet-geosearch/geosearch.umd.js" defer></script>
+    <script
+      src="/js/libs/geoblaze/georaster-layer-for-leaflet.min.js"
+      defer
+    ></script>
+    <script src="/js/libs/apexcharts/apexcharts.min.js" defer></script>
+    <script src="/js/libs/geotiff/geotiff.js" defer></script>
+    <script src="/js/libs/eventsource/eventsource-polyfill.js" defer></script>
+    <script src="/js/libs/cesium/Cesium.js" defer></script>
+    <script src="/js/libs/chroma/chroma.min.js" defer></script>
+    <script type="module" src="/js/index.js" defer></script>
+  </head>
+
+  <body>
+    <cds-header
+      aria-label="IBM Geospatial Exploration and Orchestration Studio"
+      role="banner"
+    >
+      <cds-header-menu-button
+        button-label-active="Close menu"
+        button-label-inactive="Open menu"
+        collapse-mode="rail"
+      >
+      </cds-header-menu-button>
+      <cds-header-name href="/" prefix="IBM"
+        >Geospatial Exploration and Orchestration Studio</cds-header-name
+      >
+
+      <div class="flex-spacer"></div>
+      <user-profile></user-profile>
+    </cds-header>
+
+    <cds-side-nav
+      aria-label="Side navigation"
+      role="navigation"
+      collapse-mode="rail"
+      usage-mode=""
+    >
+      <cds-side-nav-items role="list">
+        <cds-side-nav-link href="#" page="home-page" role="listitem">
+          <svg
+            slot="title-icon"
+            focusable="false"
+            preserveAspectRatio="xMidYMid meet"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="currentColor"
+            width="16"
+            height="16"
+            viewBox="0 0 32 32"
+            aria-hidden="true"
+          >
+            <path
+              d="M16.6123,2.2138a1.01,1.01,0,0,0-1.2427,0L1,13.4194l1.2427,1.5717L4,13.6209V26a2.0041,2.0041,0,0,0,2,2H26a2.0037,2.0037,0,0,0,2-2V13.63L29.7573,15,31,13.4282ZM18,26H14V18h4Zm2,0V18a2.0023,2.0023,0,0,0-2-2H14a2.002,2.002,0,0,0-2,2v8H6V12.0615l10-7.79,10,7.8005V26Z"
+            ></path>
+            <title>Home</title>
+          </svg>
+          Home
+        </cds-side-nav-link>
+
+        <cds-side-nav-link
+          id="dataset-factory-nav-link"
+          href="#data_catalog"
+          page="data-catalog-page"
+          role="listitem"
+        >
+          <svg
+            slot="title-icon"
+            focusable="false"
+            preserveAspectRatio="xMidYMid meet"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="currentColor"
+            width="16"
+            height="16"
+            viewBox="-2 -6 32 32"
+            aria-hidden="true"
+          >
+            <path d="M24 5H17V7H24V5Z" />
+            <path d="M24 10H17V12H24V10Z" />
+            <path d="M24 15H17V17H24V15Z" />
+            <path
+              d="M26 0H2C1.46973 0.000529477 0.961329 0.211413 0.586371 0.586371C0.211413 0.961329 0.000529477 1.46973 0 2V20C0.000608734 20.5302 0.211518 21.0386 0.586459 21.4135C0.9614 21.7885 1.46975 21.9994 2 22H26C26.5302 21.9993 27.0385 21.7883 27.4134 21.4134C27.7883 21.0385 27.9993 20.5302 28 20V2C27.9994 1.46975 27.7885 0.9614 27.4135 0.586459C27.0386 0.211518 26.5302 0.000608734 26 0ZM2 2H13V20H2V2ZM15 20V2H26L26.002 20H15Z"
+            />
+          </svg>
+          Dataset Factory
+        </cds-side-nav-link>
+
+        <cds-side-nav-link
+          id="tuning-nav-link"
+          href="#model_catalog"
+          page="model-catalog-page"
+          role="listitem"
+        >
+          <svg
+            slot="title-icon"
+            focusable="false"
+            preserveAspectRatio="xMidYMid meet"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="currentColor"
+            width="16"
+            height="16"
+            viewBox="0 0 32 32"
+            aria-hidden="true"
+          >
+            <path
+              d="M25,4H10A2.002,2.002,0,0,0,8,6V20.5563A3.9551,3.9551,0,0,0,6,20a4,4,0,1,0,4,4V12H25v8.5562A3.9545,3.9545,0,0,0,23,20a4,4,0,1,0,4,4V6A2.0023,2.0023,0,0,0,25,4ZM6,26a2,2,0,1,1,2-2A2.0023,2.0023,0,0,1,6,26Zm17,0a2,2,0,1,1,2-2A2.0027,2.0027,0,0,1,23,26ZM10,6H25v4H10Z"
+            ></path>
+          </svg>
+          Fine-tuning Studio
+        </cds-side-nav-link>
+
+        <cds-side-nav-link
+          href="#inference"
+          page="inference-page"
+          role="listitem"
+        >
+          <svg
+            slot="title-icon"
+            focusable="false"
+            preserveAspectRatio="xMidYMid meet"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="currentColor"
+            width="16"
+            height="16"
+            viewBox="0 0 32 32"
+            aria-hidden="true"
+          >
+            <path
+              d="M27.2314,23.6182,20,13.6748V4h2V2H10V4h2v9.6748L4.7686,23.6182A4.0183,4.0183,0,0,0,8.0186,30H23.9814a4.0183,4.0183,0,0,0,3.25-6.3818ZM14,14.3252V4h4V14.3252L20.6728,18H11.3272ZM23.9814,28H8.0186a2.0192,2.0192,0,0,1-1.6329-3.2061L9.8726,20H22.1274l3.4869,4.7939A2.0192,2.0192,0,0,1,23.9814,28Z"
+            ></path>
+          </svg>
+          Inference Lab
+        </cds-side-nav-link>
+      </cds-side-nav-items>
+    </cds-side-nav>
+
+    <app-progressbar></app-progressbar>
+    <login-widget></login-widget>
+    <loading-handler></loading-handler>
+    <error-handler></error-handler>
+    <app-backend></app-backend>
+    <feedback-modal></feedback-modal>
+    <feedback-button></feedback-button>
+
+    <main></main>
+  </body>
+</html>
+
+<style>
+  body:has(cds-header-menu-button:not([active])) cds-side-nav {
+    display: none;
+  }
+</style>

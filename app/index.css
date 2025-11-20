@@ -1,0 +1,97 @@
+/*
+* © Copyright IBM Corporation 2025
+* SPDX-License-Identifier: Apache-2.0
+*/
+
+
+html {
+  height: 100%;
+  box-sizing: border-box;
+}
+
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
+}
+
+body {
+  font-weight: 400;
+  font-family: 'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif;
+  margin: 0;
+  box-sizing: border-box;
+  position: absolute;
+  width: 100%;
+  background-color: #000
+}
+
+cds-header~cds-side-nav {
+  margin-top: 3rem;
+  height: calc(100% - 3rem);
+}
+
+.flex-spacer {
+  flex-grow: 1;
+}
+
+cds-header~cds-side-nav {
+  margin-top: 3rem;
+  height: calc(100% - 3rem);
+  background-color: #161616;
+  border-right: 1px solid #393939;
+  color: #fff;
+  width: 0;
+}
+
+cds-header~cds-side-nav[expanded] {
+  width: 16rem;
+  z-index: 9000;
+}
+
+cds-side-nav-link {}
+
+
+cds-side-nav-link::part(title) {
+  color: #c6c6c6;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+
+cds-side-nav-link::part(link):hover {
+  background-color: var(--cds-background-selected, hsla(216, 7%, 56%, .2));
+}
+
+cds-side-nav-link::part(link):focus {
+  outline: unset;
+}
+
+cds-side-nav-link::part(title-icon-container) {
+  display: flex;
+  color: #c6c6c6;
+}
+
+cds-side-nav-link[active]::part(link) {
+  background-color: #393939;
+}
+
+main {
+  padding-top: 3rem;
+  background-color: var(--cds-ui-01, #f4f4f4);
+  margin: 0;
+  min-height: 100vh;
+  width: 100%;
+}
+
+.confidential {
+  color: white;
+  font-size: 14px;
+  margin-right: 1em;
+}
+
+.toast-message {
+  position: absolute;
+  top: 3em;
+  right: 0.8em;
+  z-index: 10000;
+}

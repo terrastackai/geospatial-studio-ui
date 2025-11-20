@@ -1,0 +1,40 @@
+{
+  "name": "geo-fmaas-ui",
+  "version": "1.0.0",
+  "description": "Geospatial Foundation Models Studio UI",
+  "main": "app/index.html",
+  "scripts": {
+    "start": "./dev.sh dev",
+    "build": "./build.sh dev",
+    "test": "web-test-runner --coverage",
+    "test:watch": "web-test-runner --watch",
+    "test-e2e": "npx cypress open",
+    "docs-serve": "cd docs && hatch run serve",
+    "docs-build": "cd docs && hatch run build",
+    "docs-deploy": "cd docs && hatch run gh-deploy"
+  },
+  "author": "",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@carbon/web-components": "^2.38.0",
+    "apexcharts": "3.41.0",
+    "cesium": "^1.131.0",
+    "chroma-js": "2.4.2",
+    "d3": "^7.9.0",
+    "esbuild": "^0.25.0",
+    "eventsource": "1.1.2",
+    "geoblaze": "^2.8.0",
+    "georaster-layer-for-leaflet": "3.10.0",
+    "geotiff": "^2.0.4",
+    "js-yaml": "4.1.1",
+    "leaflet": "1.7.1",
+    "leaflet-geosearch": "3.7.0"
+  },
+  "devDependencies": {
+    "@open-wc/testing": "^3.2.0",
+    "@web/test-runner": "^0.14.0",
+    "cypress-lit": "^0.0.8",
+    "sinon": "^18.0.0"
+  }
+}
