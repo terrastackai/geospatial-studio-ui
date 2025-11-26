@@ -232,7 +232,7 @@ window.customElements.define(
       images.forEach((image, idx) => {
         let splitString = image.split("training_data/")[1].split("_");
 
-        const fileName = splitString[0] + "_" + splitString[1];
+        const fileName = splitString[0] + "_" + splitString[1] + "_" + idx;
 
         const imageObject = {
           name: fileName,

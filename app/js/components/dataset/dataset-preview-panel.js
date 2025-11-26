@@ -352,7 +352,7 @@ window.customElements.define(
       <div class="layer-container ${layer.opacity === 1 ? "" : "not-visible"}">
         <span class="layer-color-block"></span>
         <h4 class="layer-name" title="${layer.name} - ${layer.type}">
-          ${layer.name} - ${layer.type}
+          ${layer.type}
         </h4>
         <button class="visibility-toggle">
           ${layer.opacity === 1

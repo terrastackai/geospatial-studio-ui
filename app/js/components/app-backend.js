@@ -609,7 +609,7 @@ window.customElements.define(
       let method = "GET";
       try {
         app.progress.show();
-        res = await fetch(`/studio-gateway/v2/datasets/${dataset_id}/sample`, {
+        res = await fetch(`/studio-gateway/v2/datasets/${dataset_id}/sample?sample_count=10`, {
           headers: this.getHeaders(),
           method: method,
         });
