@@ -30,4 +30,4 @@ then
 fi
 
 DOCKER=`which docker || which podman`
-$DOCKER build --platform=$platform -t localhost/geostudio-ui .
+$DOCKER build --platform=$platform --load -t localhost/geostudio-ui .
