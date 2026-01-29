@@ -14,7 +14,7 @@
   "private": true,
   "type": "module",
   "dependencies": {
-    "@carbon/web-components": "^2.38.0",
+    "@carbon/web-components": "2.46.0",
     "apexcharts": "3.41.0",
     "cesium": "^1.131.0",
     "chroma-js": "2.4.2",
