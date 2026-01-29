@@ -41,24 +41,6 @@ if [[ $DOCKER == *"podman"* ]]; then
   sed -i '' 's/security_model=mapped-xattr/security_model=none/' $(podman machine inspect | jq --raw-output '.[0].ConfigPath.Path') || echo ""
 fi
 
-# Starting temp-cont for persisting docs
-echo Copy docs!
-$DOCKER \
-  create --name temp-cont \
-  localhost/geostudio-ui
-
-$DOCKER \
-  cp temp-cont:/home/geostudio/srv/docs "`pwd`/app"
-
-$DOCKER \
- cp temp-cont:/home/geostudio/srv/sdk "`pwd`/app"
-
-
-$DOCKER \
-  rm temp-cont
-
-echo temp-cont removed!
-
 # Starting container
 echo Starting container on http://localhost:9090 in mode $ENV
 $DOCKER \

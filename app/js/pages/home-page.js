@@ -269,7 +269,7 @@ window.customElements.define(
 
       this.documentation = this.shadow.querySelector("#documentation-card");
       this.documentation.addEventListener("click", () => {
-        window.open("/docs/", "_blank").focus();
+        window.open("https://terrastackai.github.io/geospatial-studio", "_blank").focus();
       });
 
       this.feedback = this.shadow.querySelector("#feedback-card");

@@ -8,10 +8,7 @@
     "build": "./build.sh dev",
     "test": "web-test-runner --coverage",
     "test:watch": "web-test-runner --watch",
-    "test-e2e": "npx cypress open",
-    "docs-serve": "cd docs && hatch run serve",
-    "docs-build": "cd docs && hatch run build",
-    "docs-deploy": "cd docs && hatch run gh-deploy"
+    "test-e2e": "npx cypress open"
   },
   "author": "",
   "private": true,
