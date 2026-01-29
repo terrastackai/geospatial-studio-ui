@@ -34,42 +34,7 @@ RUN cp -r ../app/js/libs $OUTPUT/app/js/
 RUN rm -rf $OUTPUT/app/env.json
 
 
-### STAGE 2: Build Docs ###
-FROM registry.access.redhat.com/ubi9/python-312:latest AS build_docs
-
-USER root
-WORKDIR /docs
-
-# Install hatch
-RUN python -m pip install --upgrade hatch
-
-COPY docs/ .
-
-# Install hatch
-RUN python -m pip install .
-
-RUN hatch run build
-
-### STAGE 3: Build SDK Docs ###
-FROM registry.access.redhat.com/ubi9/python-312:latest AS build_sdk_docs
-
-USER root
-WORKDIR /docs
-RUN python -m pip install --upgrade poetry
-
-RUN mkdir -p /docs/geospatial-studio-sdk/
-COPY docs/geospatial-studio-docs/docs/geospatial-studio-toolkit/geospatial-studio-sdk/ /docs/geospatial-studio-sdk/
-
-WORKDIR /docs/geospatial-studio-sdk
-RUN poetry lock
-RUN poetry install  --only docs -v
-
-RUN mkdir -p /docs/examples/
-COPY docs/geospatial-studio-docs/docs/geospatial-studio-toolkit/examples/ /docs/examples/
-RUN poetry run docs-build
-
-
-### STAGE 4: Run ###
+### STAGE 2: Run ###
 FROM alpine:latest
 
 RUN addgroup -S -g 1001 geostudio && adduser -S -u 1001 -G geostudio geostudio
@@ -92,9 +57,6 @@ RUN chmod -R 777 $HOME
 RUN chmod 777 haproxy.cfg local_haproxy.cfg local_with_ssl_haproxy.cfg
 RUN chmod 777 env.json
 COPY --chown=1001:1001 --from=build /usr/src/app/deploy/output/app/ srv/
-COPY --chown=1001:1001 --from=build_docs /docs/geospatial-studio-docs/site/ srv/docs/
-RUN mkdir -p srv/sdk/
-COPY --chown=1001:1001 --from=build_sdk_docs /docs/geospatial-studio-sdk/sdk-docs-site/ srv/sdk/
 
 
 EXPOSE 8090
