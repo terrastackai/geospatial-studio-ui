@@ -8,7 +8,7 @@
 
 
 ### STAGE 1: Build UI ###
-FROM node:20-alpine3.22 as build
+FROM node:20-alpine3.22 AS build
 
 WORKDIR /usr/src/app
 
@@ -37,32 +37,36 @@ RUN rm -rf $OUTPUT/app/env.json
 ### STAGE 2: Run ###
 FROM alpine:latest
 
-RUN addgroup -S -g 1001 geostudio && adduser -S -u 1001 -G geostudio geostudio
+RUN addgroup -S -g 10001 geostudio && adduser -S -u 10001 -G geostudio geostudio
 
-RUN apk add --no-cache haproxy althttpd bash gettext
+RUN apk add --no-cache nginx bash gettext
 
-ENV HOME /home/geostudio
+ENV HOME=/home/geostudio
 
 WORKDIR $HOME
 
-COPY --chown=1001:1001 --from=build /usr/src/app/docker-entrypoint.sh docker-entrypoint.sh
-COPY --chown=1001:1001 --from=build /usr/src/app/deploy/start_haproxy_althttpd.sh start_haproxy_althttpd.sh
-COPY --chown=1001:1001 --from=build /usr/src/app/deploy/config/haproxy.conf haproxy.cfg
-COPY --chown=1001:1001 --from=build /usr/src/app/deploy/config/local_haproxy.conf local_haproxy.cfg
-COPY --chown=1001:1001 --from=build /usr/src/app/deploy/config/local_with_ssl_haproxy.conf local_with_ssl_haproxy.cfg
-COPY --chown=1001:1001 --from=build /usr/src/app/deploy/config/404.http /etc/haproxy/errors/404.http
-COPY --chown=1001:1001 --from=build /usr/src/app/deploy/config/env.json env.json
-RUN chown -R 1001:1001 $HOME
+# Create necessary directories
+RUN mkdir -p /var/log/nginx /var/lib/nginx /home/geostudio/errors && \
+    chown -R 10001:10001 /var/log/nginx /var/lib/nginx /home/geostudio/errors
+
+COPY --chown=10001:10001 --from=build /usr/src/app/docker-entrypoint.sh docker-entrypoint.sh
+COPY --chown=10001:10001 --from=build /usr/src/app/deploy/start_nginx.sh start_nginx.sh
+COPY --chown=10001:10001 --from=build /usr/src/app/deploy/config/nginx.conf nginx.conf
+COPY --chown=10001:10001 --from=build /usr/src/app/deploy/config/local_nginx.conf local_nginx.conf
+COPY --chown=10001:10001 --from=build /usr/src/app/deploy/config/local_with_ssl_nginx.conf local_with_ssl_nginx.conf
+COPY --chown=10001:10001 --from=build /usr/src/app/deploy/config/404.html errors/404.html
+COPY --chown=10001:10001 --from=build /usr/src/app/deploy/config/env.json env.json
+RUN chown -R 10001:10001 $HOME
 RUN chmod -R 777 $HOME
-RUN chmod 777 haproxy.cfg local_haproxy.cfg local_with_ssl_haproxy.cfg
+RUN chmod 777 nginx.conf local_nginx.conf local_with_ssl_nginx.conf
 RUN chmod 777 env.json
-COPY --chown=1001:1001 --from=build /usr/src/app/deploy/output/app/ srv/
+COPY --chown=10001:10001 --from=build /usr/src/app/deploy/output/app/ srv/
 
 
 EXPOSE 8090
 
-USER 1001:1001
+USER 10001:10001
 
 ENTRYPOINT ["/home/geostudio/docker-entrypoint.sh"]
 
-CMD /home/geostudio/start_haproxy_althttpd.sh
+CMD ["/home/geostudio/start_nginx.sh"]
