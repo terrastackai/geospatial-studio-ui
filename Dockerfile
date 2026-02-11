@@ -58,6 +58,7 @@ COPY --chown=10001:10001 --from=build /usr/src/app/deploy/config/404.html errors
 COPY --chown=10001:10001 --from=build /usr/src/app/deploy/config/env.json env.json
 RUN chown -R 10001:10001 $HOME
 RUN chmod -R 777 $HOME
+RUN chmod -R 777 /var/lib/nginx
 RUN chmod 777 nginx.conf local_nginx.conf local_with_ssl_nginx.conf
 RUN chmod 777 env.json
 COPY --chown=10001:10001 --from=build /usr/src/app/deploy/output/app/ srv/
