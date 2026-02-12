@@ -45,9 +45,12 @@ ENV HOME=/home/geostudio
 
 WORKDIR $HOME
 
-# Create necessary directories
-RUN mkdir -p /var/log/nginx /var/lib/nginx /home/geostudio/errors && \
-    chown -R 1001:1001 /var/log/nginx /var/lib/nginx /home/geostudio/errors
+# Create necessary directories with proper permissions for OpenShift
+# OpenShift runs with random UIDs, so we need world-writable directories
+RUN mkdir -p /tmp/nginx_client_body /tmp/nginx_proxy /tmp/nginx_fastcgi /tmp/nginx_uwsgi /tmp/nginx_scgi /home/geostudio/errors && \
+    chmod -R 777 /tmp/nginx_client_body /tmp/nginx_proxy /tmp/nginx_fastcgi /tmp/nginx_uwsgi /tmp/nginx_scgi && \
+    chown -R 1001:0 /home/geostudio/errors && \
+    chmod -R g=u /home/geostudio/errors
 
 COPY --chown=1001:1001 --from=build /usr/src/app/docker-entrypoint.sh docker-entrypoint.sh
 COPY --chown=1001:1001 --from=build /usr/src/app/deploy/start_nginx.sh start_nginx.sh
@@ -56,10 +59,10 @@ COPY --chown=1001:1001 --from=build /usr/src/app/deploy/config/local_nginx.conf 
 COPY --chown=1001:1001 --from=build /usr/src/app/deploy/config/local_with_ssl_nginx.conf local_with_ssl_nginx.conf
 COPY --chown=1001:1001 --from=build /usr/src/app/deploy/config/404.html errors/404.html
 COPY --chown=1001:1001 --from=build /usr/src/app/deploy/config/env.json env.json
-RUN chown -R 1001:1001 $HOME
-RUN chmod -R 777 $HOME
-RUN chmod 777 nginx.conf local_nginx.conf local_with_ssl_nginx.conf
-RUN chmod 777 env.json
+# Set permissions for OpenShift compatibility (group 0 = root group)
+RUN chown -R 1001:0 $HOME && \
+    chmod -R g=u $HOME && \
+    chmod -R 777 $HOME
 COPY --chown=1001:1001 --from=build /usr/src/app/deploy/output/app/ srv/
 
 
