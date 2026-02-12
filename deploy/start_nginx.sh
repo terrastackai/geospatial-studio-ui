@@ -9,6 +9,7 @@
 echo "Starting nginx"
 
 # Start nginx in foreground mode
-exec nginx -c /home/geostudio/nginx.conf -g 'daemon off;'
+# Use -e flag to specify error log before config is parsed (OpenShift compatibility)
+exec nginx -e /tmp/nginx_error.log -c /home/geostudio/nginx.conf -g 'daemon off;'
 
 
