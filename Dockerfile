@@ -8,7 +8,7 @@
 
 
 ### STAGE 1: Build UI ###
-FROM node:20-alpine3.22 as build
+FROM node:20-alpine3.22 AS build
 
 WORKDIR /usr/src/app
 
@@ -39,23 +39,30 @@ FROM alpine:latest
 
 RUN addgroup -S -g 1001 geostudio && adduser -S -u 1001 -G geostudio geostudio
 
-RUN apk add --no-cache haproxy althttpd bash gettext
+RUN apk add --no-cache nginx bash gettext
 
-ENV HOME /home/geostudio
+ENV HOME=/home/geostudio
 
 WORKDIR $HOME
 
+# Create necessary directories with proper permissions for OpenShift
+# OpenShift runs with random UIDs, so we need world-writable directories
+RUN mkdir -p /tmp/nginx_client_body /tmp/nginx_proxy /tmp/nginx_fastcgi /tmp/nginx_uwsgi /tmp/nginx_scgi /home/geostudio/errors && \
+    chmod -R 777 /tmp/nginx_client_body /tmp/nginx_proxy /tmp/nginx_fastcgi /tmp/nginx_uwsgi /tmp/nginx_scgi && \
+    chown -R 1001:0 /home/geostudio/errors && \
+    chmod -R g=u /home/geostudio/errors
+
 COPY --chown=1001:1001 --from=build /usr/src/app/docker-entrypoint.sh docker-entrypoint.sh
-COPY --chown=1001:1001 --from=build /usr/src/app/deploy/start_haproxy_althttpd.sh start_haproxy_althttpd.sh
-COPY --chown=1001:1001 --from=build /usr/src/app/deploy/config/haproxy.conf haproxy.cfg
-COPY --chown=1001:1001 --from=build /usr/src/app/deploy/config/local_haproxy.conf local_haproxy.cfg
-COPY --chown=1001:1001 --from=build /usr/src/app/deploy/config/local_with_ssl_haproxy.conf local_with_ssl_haproxy.cfg
-COPY --chown=1001:1001 --from=build /usr/src/app/deploy/config/404.http /etc/haproxy/errors/404.http
+COPY --chown=1001:1001 --from=build /usr/src/app/deploy/start_nginx.sh start_nginx.sh
+COPY --chown=1001:1001 --from=build /usr/src/app/deploy/config/nginx.conf nginx.conf
+COPY --chown=1001:1001 --from=build /usr/src/app/deploy/config/local_nginx.conf local_nginx.conf
+COPY --chown=1001:1001 --from=build /usr/src/app/deploy/config/local_with_ssl_nginx.conf local_with_ssl_nginx.conf
+COPY --chown=1001:1001 --from=build /usr/src/app/deploy/config/404.html errors/404.html
 COPY --chown=1001:1001 --from=build /usr/src/app/deploy/config/env.json env.json
-RUN chown -R 1001:1001 $HOME
-RUN chmod -R 777 $HOME
-RUN chmod 777 haproxy.cfg local_haproxy.cfg local_with_ssl_haproxy.cfg
-RUN chmod 777 env.json
+# Set permissions for OpenShift compatibility (group 0 = root group)
+RUN chown -R 1001:0 $HOME && \
+    chmod -R g=u $HOME && \
+    chmod -R 777 $HOME
 COPY --chown=1001:1001 --from=build /usr/src/app/deploy/output/app/ srv/
 
 
@@ -65,4 +72,4 @@ USER 1001:1001
 
 ENTRYPOINT ["/home/geostudio/docker-entrypoint.sh"]
 
-CMD /home/geostudio/start_haproxy_althttpd.sh
+CMD ["/home/geostudio/start_nginx.sh"]
