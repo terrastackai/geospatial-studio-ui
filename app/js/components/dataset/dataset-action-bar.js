@@ -156,7 +156,8 @@ window.customElements.define(
         this.fineTuneButton.removeAttribute("disabled");
       }
 
-      if (datasetObject.logs) {
+      // Enable logs download for all statuses (Pending, In-progress, Failed, Succeeded)
+      if (["Pending", "In-progress", "Failed", "Succeeded"].includes(datasetObject.status)) {
         this.downloadButton.removeAttribute("disabled");
       }
     }
