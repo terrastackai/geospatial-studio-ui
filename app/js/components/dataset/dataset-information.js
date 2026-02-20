@@ -140,11 +140,11 @@ window.customElements.define(
         {
           name: this.datasetObject.status,
           color: `${
-            this.datasetsObject.status === "Succeeded"
+            this.datasetObject.status === "Succeeded"
               ? "green"
-              : this.datasetsObject.status === "Onboarding"
+              : this.datasetObject.status === "Onboarding"
               ? "orange"
-              : this.datasetsObject.status === "Pending"
+              : this.datasetObject.status === "Pending"
               ? "grey"
               : "red"
           }`,
