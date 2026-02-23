@@ -214,8 +214,7 @@ window.customElements.define(
         this.deleteButton.removeAttribute("disabled");
       }
 
-      // Enable logs button for all statuses (Pending, In-progress, Failed, Succeeded)
-      if (!["Failed", "Pending", "In-progress", "Succeeded"].includes(model.status)) {
+      if (model.status !== "Pending") {
         this.logsButton.setAttribute("disabled", "");
       }
 

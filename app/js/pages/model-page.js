@@ -197,9 +197,8 @@ window.customElements.define(
       });
 
       this.actionBar.addEventListener("download-logs", () => {
-        // Allow log downloads for all statuses (Pending, In-progress, Failed, Succeeded)
         if (this.catalogGroup === "Tune" &&
-            ["Failed", "Pending", "In-progress", "Succeeded"].includes(this.model.status)) {
+            this.model.status !== "Pending") {
           this.getTuneLogs(this.model.id);
         }
       });
