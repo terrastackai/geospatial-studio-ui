@@ -214,13 +214,12 @@ window.customElements.define(
         this.deleteButton.removeAttribute("disabled");
       }
 
-      // Enable logs button for all statuses (Pending, In-progress, Failed, Succeeded)
-      if (!["Failed", "Pending", "In-progress", "Succeeded"].includes(model.status)) {
+      if (model.status !== "Pending") {
         this.logsButton.setAttribute("disabled", "");
       }
 
-      if (!this.positiveStatus.includes(model.status)) {
-        this.tryInLabButton.setAttribute("disabled", "");
+      if (model?.logs?.includes('log') && !["Pending", "Submitted"].includes(model.status)) {
+        this.logsButton.removeAttribute("disabled");
       }
 
       if (

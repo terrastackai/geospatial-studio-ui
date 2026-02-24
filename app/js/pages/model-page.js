@@ -14,6 +14,7 @@ import "../components/model-catalog/try-out-modal.js";
 import "../components/model/model-history-table.js";
 import "../components/model/mlflow-graph.js";
 import "../components/delete-modal.js";
+import "../components/refresh-timer.js";
 
 const template = () => /* HTML */ `
   <style>
@@ -47,6 +48,10 @@ const template = () => /* HTML */ `
       margin: 2rem 4rem 4rem;
       width: calc(100vw - 8rem);
       z-index: 1;
+    }
+
+    refresh-timer {
+      align-self: flex-end;
     }
 
     cds-tile {
@@ -113,6 +118,7 @@ const template = () => /* HTML */ `
     ></breadcrumb-button>
     <try-out-modal></try-out-modal>
     <delete-modal></delete-modal>
+    <refresh-timer></refresh-timer>
     <model-action-bar></model-action-bar>
     <model-information></model-information>
     <model-history-table></model-history-table>
@@ -140,6 +146,7 @@ window.customElements.define(
       this.graph1 = this.shadow.querySelector("#graph-1");
       this.graph2 = this.shadow.querySelector("#graph-2");
       this.deleteModal = this.shadow.querySelector("delete-modal");
+      this.refreshTimer = this.shadow.querySelector("refresh-timer");
 
       this.tryOutModalV2.addEventListener("modal-submitted", (e) => {
         this.tryOutModalV2.closeModal();
@@ -197,9 +204,8 @@ window.customElements.define(
       });
 
       this.actionBar.addEventListener("download-logs", () => {
-        // Allow log downloads for all statuses (Pending, In-progress, Failed, Succeeded)
         if (this.catalogGroup === "Tune" &&
-            ["Failed", "Pending", "In-progress", "Succeeded"].includes(this.model.status)) {
+            (!["Pending", "Submitted"].includes(this.model.status))) {
           this.getTuneLogs(this.model.id);
         }
       });
@@ -212,6 +218,10 @@ window.customElements.define(
 
       this.deleteModal.addEventListener("cancelled", (e) => {
         this.deleteModal.close();
+      });
+
+      this.refreshTimer.addEventListener("refresh", () => {
+        this.getModelData();
       });
 
       this.getModelData();
@@ -257,6 +267,8 @@ window.customElements.define(
             this.model.id,
             this.catalogGroup
           );
+          this.refreshTimer.stopAutoRefresh();
+          this.refreshTimer.startAutoRefresh();
         } else {
           app.showMessage(
             `Failed to load ${this.catalogGroup}: ` +
