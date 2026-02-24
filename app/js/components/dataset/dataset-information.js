@@ -125,7 +125,6 @@ window.customElements.define(
     }
 
     setupInformation(datasetObject) {
-      console.log(datasetObject);
       this.datasetObject = datasetObject;
 
       this.setupTags();

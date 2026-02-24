@@ -198,7 +198,7 @@ window.customElements.define(
 
       this.actionBar.addEventListener("download-logs", () => {
         if (this.catalogGroup === "Tune" &&
-            this.model.status !== "Pending") {
+            (!["Pending", "Submitted"].includes(this.model.status))) {
           this.getTuneLogs(this.model.id);
         }
       });

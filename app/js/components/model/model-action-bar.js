@@ -218,8 +218,8 @@ window.customElements.define(
         this.logsButton.setAttribute("disabled", "");
       }
 
-      if (!this.positiveStatus.includes(model.status)) {
-        this.tryInLabButton.setAttribute("disabled", "");
+      if (model?.logs?.includes('log') && !["Pending", "Submitted"].includes(model.status)) {
+        this.logsButton.removeAttribute("disabled");
       }
 
       if (
