@@ -125,7 +125,6 @@ window.customElements.define(
     }
 
     setupInformation(datasetObject) {
-      console.log(datasetObject);
       this.datasetObject = datasetObject;
 
       this.setupTags();
@@ -140,7 +139,13 @@ window.customElements.define(
         {
           name: this.datasetObject.status,
           color: `${
-            this.datasetObject.status === "Succeeded" ? "green" : "red"
+            this.datasetObject.status === "Succeeded"
+              ? "green"
+              : this.datasetObject.status === "Onboarding"
+              ? "orange"
+              : this.datasetObject.status === "Pending"
+              ? "grey"
+              : "red"
           }`,
         },
         { name: this.datasetObject.size, color: "teal" },

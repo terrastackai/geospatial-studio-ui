@@ -35,6 +35,7 @@ const template = () => /* HTML */ `
     <cds-accordion-item title="Status" open>
       <cds-checkbox-group id="status-checkbox-group" data-value="status">
         <cds-checkbox data-value="Succeeded">Succeeded</cds-checkbox>
+        <cds-checkbox data-value="Onboarding">Onboarding</cds-checkbox>
         <cds-checkbox data-value="Pending">Pending</cds-checkbox>
         <cds-checkbox data-value="Failed">Failed</cds-checkbox>
       </cds-checkbox-group>
