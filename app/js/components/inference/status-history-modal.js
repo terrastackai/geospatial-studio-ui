@@ -527,7 +527,7 @@ window.customElements.define(
           return stopStatusIcon({
             width: 32,
             height: 32,
-            fill: "#da1e28",
+            fill: "#ff832b",
           });
         default:
           return progressStatusIcon({ width: 32, height: 32 });
