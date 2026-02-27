@@ -486,7 +486,7 @@ window.customElements.define(
         >
           ${step?.status ? this.getStatusIcon(step.status) : ""}
           ${step
-            ? /* HTML */ `<button class="download-step-button" ${step.status === "WAITING" || step.status === "READY" ? "disabled" : ""}>
+            ? /* HTML */ `<button class="download-step-button" ${["WAITING", "READY", "STOPPED"].includes(step?.status) ? "disabled" : ""}>
                 ${downloadIcon({ width: 16, height: 16 })}
               </button>`
             : ""}
