@@ -35,6 +35,11 @@ const template = (obj) => /* HTML */ `
       color: var(--cds-text-01, #f4f4f4);
     }
 
+    .download-step-button:disabled {
+      opacity: 25%;
+      cursor: not-allowed;
+    }
+
     cds-modal {
       background-color: #000000cc;
     }
@@ -481,7 +486,7 @@ window.customElements.define(
         >
           ${step?.status ? this.getStatusIcon(step.status) : ""}
           ${step
-            ? /* HTML */ `<button class="download-step-button">
+            ? /* HTML */ `<button class="download-step-button" ${step.status === "WAITING" || step.status === "READY" ? "disabled" : ""}>
                 ${downloadIcon({ width: 16, height: 16 })}
               </button>`
             : ""}
