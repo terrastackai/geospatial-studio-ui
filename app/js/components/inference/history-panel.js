@@ -18,6 +18,7 @@ import {
   stopStatusIcon,
   partiallyCompletedStatusIcon,
   pendingStatusIcon,
+  stoppedWithResultsStatusIcon,
 } from "../../icons.js";
 import asWebComponent from "../../webcomponent.js";
 import * as util from "../../utils.js";
@@ -557,12 +558,16 @@ window.customElements.define(
             util.COMPLETED_INFERENCE_NOTIFICATION,
             util.COMPLETED_WITH_ERRORS_INFERENCE_NOTIFICATION,
             util.PARTIALLY_COMPLETED_INFERENCE_NOTIFICATION,
-          ].includes(entry.status)
+          ].includes(entry.status) ||
+          ( entry?.geoserver_layers?.predicted_layers?.length
+            && entry.status === util.STOPPED_INFERENCE_NOTIFICATION)
             ? ""
             : "disabled"}
         >
           <span class="entry-status-icon">
-            ${this.getStatusIcon(entry.status)}
+            ${( entry?.geoserver_layers?.predicted_layers?.length
+            && entry.status === util.STOPPED_INFERENCE_NOTIFICATION)
+            ? this.getStatusIcon("STOPPED_WITH_RESULTS"): this.getStatusIcon(entry.status)}
           </span>
           <h4 class="entry-time">${this.formatTime(entry.created_at)}</h4>
           <div class="entry-info">
@@ -674,7 +679,9 @@ window.customElements.define(
           <section class="overflow-info-container">
             <h4 class="overflow-status-container">
               <span class="overflow-status-icon">
-                ${this.getStatusIcon(entry.status)}
+                ${( entry?.geoserver_layers?.predicted_layers?.length
+                  && entry.status === util.STOPPED_INFERENCE_NOTIFICATION)
+                  ? this.getStatusIcon("STOPPED_WITH_RESULTS"): this.getStatusIcon(entry.status)}
               </span>
               <span class="overflow-status-text">Status</span>
               <button class="status-history-button">
@@ -754,6 +761,8 @@ window.customElements.define(
           return readyStatusIcon({ width: 16, height: 16 });
         case util.COMPLETED_WITH_ERRORS_INFERENCE_NOTIFICATION:
           return completedWithErrorsStatusIcon({ width: 18, height: 18 });
+        case util.STOPPED_WITH_RESULTS_INFERENCE_NOTIFICATION:
+          return stoppedWithResultsStatusIcon({ width: 18, height: 18 });
         case util.FAILED_INFERENCE_NOTIFICATION:
           return errorStatusIcon({ width: 16, height: 16 });
         case util.STOPPED_INFERENCE_NOTIFICATION:

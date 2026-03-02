@@ -255,7 +255,9 @@ window.customElements.define(
         <cds-table-cell>${inference.created_by}</cds-table-cell>
         <cds-table-cell class="svg-cell">
           <span>
-            ${this.getStatusIcon(inference.status)} ${inference.status}
+            ${( inference?.geoserver_layers?.predicted_layers?.length
+              && inference.status === util.STOPPED_INFERENCE_NOTIFICATION)
+              ? this.getStatusIcon("STOPPED_WITH_RESULTS"): this.getStatusIcon(inference.status)} ${inference.status}
           </span>
         </cds-table-cell>
       </cds-table-row>
@@ -276,6 +278,8 @@ window.customElements.define(
           return readyStatusIcon({ width: 16, height: 16 });
         case util.COMPLETED_WITH_ERRORS_INFERENCE_NOTIFICATION:
           return completedWithErrorsStatusIcon({ width: 18, height: 18 });
+        case util.STOPPED_WITH_RESULTS_INFERENCE_NOTIFICATION:
+          return stoppedWithResultsStatusIcon({ width: 18, height: 18 });
         case util.FAILED_INFERENCE_NOTIFICATION:
           return errorStatusIcon({ width: 16, height: 16 });
         case util.STOPPED_INFERENCE_NOTIFICATION:
