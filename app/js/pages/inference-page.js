@@ -13,6 +13,7 @@ import "../components/inference/examples-panel.js";
 import "../components/inference/inference-panel.js";
 import "../components/inference/menu-bar.js";
 import "../components/inference/action-bar.js";
+import "../components/inference/additional-info-panel.js";
 // import "../components/inference/app-timeline.js";
 import "../components/inference/timeseries-graph.js";
 import "../components/inference/color-bar.js";
@@ -146,6 +147,10 @@ const template = (obj) => /* HTML */ `
         id="inference_panel"
         class="display-none"
       ></inference-panel>
+      <additional-info-panel
+        id="additional_info_panel"
+        class="display-none"
+      ></additional-info-panel>
       <timeseries-graph
         id="timeseries_graph"
         class="display-none"
@@ -181,6 +186,7 @@ window.customElements.define(
       this.layersPanel = this.shadow.querySelector("layer-panel");
       this.historyPanel = this.shadow.querySelector("history-panel");
       this.examplesPanel = this.shadow.querySelector("examples-panel");
+      this.additionalInfoPanel = this.shadow.querySelector("additional-info-panel");
       this.menuBar = this.shadow.querySelector("menu-bar");
       this.timeseriesGraph = this.shadow.querySelector("timeseries-graph");
       this.actionBar = this.shadow.querySelector("action-bar");
@@ -278,6 +284,10 @@ window.customElements.define(
         this.displayTimeseriesGraph(false);
         app.main.map.selectedFeature = null;
         app.main.map.selectedFeatureLayerName = null;
+      });
+
+      this.additionalInfoPanel.addEventListener("close-panel", () => {
+        this.additionalInfoPanel.hide();
       });
 
       const workspace = await app.workspace.getWorkspace();
@@ -989,10 +999,53 @@ window.customElements.define(
         inference.created_by === this.userEmail
       );
 
+      // Handle additional information panel
+      this.updateAdditionalInfoPanel(inference);
+
       if (!this.menuBar.layersButton.hasAttribute("selected")) {
         this.menuBar.deselectPanel();
         this.menuBar.layersButton.setAttribute("selected", "");
         this.togglePanels("layers");
+      }
+    }
+
+    updateAdditionalInfoPanel(inference) {
+      if (!this.additionalInfoPanel) return;
+
+      const hasInferenceInfo = inference?.additional_information;
+      const hasLayerInfo = inference?.geoserver_layers?.predicted_layers?.some(
+        layer => layer.additional_information
+      );
+
+      if (hasInferenceInfo || hasLayerInfo) {
+        // Set inference-level information
+        if (hasInferenceInfo) {
+          this.additionalInfoPanel.setInferenceInfo({
+            title: inference.model_id || "Inference Information",
+            content: inference.additional_information
+          });
+        }
+
+        // Clear existing layer info and add all layers with additional_information
+        this.additionalInfoPanel.clearAllLayerInfo();
+        if (hasLayerInfo) {
+          inference.geoserver_layers.predicted_layers.forEach((layer, index) => {
+            if (layer.additional_information) {
+              // Use layer_name, name, or index as fallback for layer ID
+              const layerId = layer.layer_id || layer.layer_name || layer.name || `layer-${index}`;
+              this.additionalInfoPanel.addLayerInfo(layerId, {
+                title: layer.display_name || layer.layer_name || layer.name || layerId,
+                content: layer.additional_information
+              });
+            }
+          });
+        }
+
+        // Show the panel
+        this.additionalInfoPanel.show();
+      } else {
+        // Hide panel if no additional information
+        this.additionalInfoPanel.hide();
       }
     }
 
