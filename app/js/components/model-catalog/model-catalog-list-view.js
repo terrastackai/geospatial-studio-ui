@@ -543,12 +543,12 @@ window.customElements.define(
             mids.collection,
             mids.connector
           );
-          if (!response?.results?.[0]?.data_connector_config) {
+          if (!response?.results?.[0]?.collection_name) {
             throw new Error(
               `Error fetching Collection: ${mids.collection} and Connector: ${mids.connector}`
             );
           }
-          return response.results[0].data_connector_config;
+          return response.results[0];
         }
       );
 
