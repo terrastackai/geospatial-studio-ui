@@ -10,6 +10,7 @@ import "../../libs/carbon-web-components/inline-loading.min.js";
 import "../../libs/carbon-web-components/tabs.min.js";
 import "../dataset-settings-form/data-sources-form.js";
 import "../dataset-settings-form/layers-form.js";
+import "../dataset-settings-form/post-processing-form.js";
 import { launchIcon } from "../../icons.js";
 
 const template = (obj) => /* HTML */ `
@@ -68,6 +69,9 @@ const template = (obj) => /* HTML */ `
           <cds-tab id="tab-layer" target="panel-layer" value="layer"
             >Layers</cds-tab
           >
+          <cds-tab id="tab-postProcessing" target="panel-postProcessing" value="post-processing"
+            >Post-processing</cds-tab
+          >
         </cds-tabs>
       </div>
       <div
@@ -79,6 +83,9 @@ const template = (obj) => /* HTML */ `
       </div>
       <div id="panel-layer" role="tabpanel" aria-labelledby="tab-layer" hidden>
         <layers-form></layers-form>
+      </div>
+      <div id="panel-postProcessing" role="tabpanel" aria-labelledby="tab-postProcessing" hidden>
+        <post-processing-form></post-processing-form>
       </div>
     </cds-modal-body>
     <cds-modal-footer>
@@ -111,6 +118,7 @@ window.customElements.define(
 
       this.dataSourcesForm = this.shadow.querySelector("data-sources-form");
       this.layersForm = this.shadow.querySelector("layers-form");
+      this.postProcessingForm = this.shadow.querySelector("post-processing-form");
       this.inlineLoading = this.shadow.querySelector("cds-inline-loading");
       this.saveButton = this.shadow.querySelector("#save-button");
       this.cancelButton = this.shadow.querySelector("#cancel-button");
@@ -127,6 +135,10 @@ window.customElements.define(
         this.validateModal();
       });
 
+      this.postProcessingForm.addEventListener("form-updated", () => {
+        this.validateModal();
+      });
+
       this.dataSourcesForm.addEventListener("form-submitted", (e) => {
         this.payload.data_sources = e.detail.data_sources;
       });
@@ -135,9 +147,22 @@ window.customElements.define(
         this.payload.layers = e.detail.layers;
       });
 
+      this.postProcessingForm.addEventListener("form-submitted", (e) => {
+        this.payload.post_processing = e.detail.post_processing;
+        // Extract generic_processor if it exists in post_processing
+        if (e.detail.post_processing && e.detail.post_processing.generic_processor) {
+          this.payload.generic_processor = e.detail.post_processing.generic_processor;
+          // Remove it from post_processing as it's a separate field
+          delete this.payload.post_processing.generic_processor;
+        } else {
+          this.payload.generic_processor = null;
+        }
+      });
+
       this.saveButton.addEventListener("click", () => {
         this.dataSourcesForm.submitForm();
         this.layersForm.submitForm();
+        this.postProcessingForm.submitForm();
         this.submitForm();
       });
 
@@ -153,6 +178,10 @@ window.customElements.define(
 
       trainOptionsDeepCopy.model_input_data_spec = this.payload.data_sources;
 
+      trainOptionsDeepCopy.post_processing = this.payload.post_processing;
+
+      trainOptionsDeepCopy.generic_processor = this.payload.generic_processor;
+
       this.dispatchEvent(
         new CustomEvent("modal-submitted", {
           detail: {
@@ -163,8 +192,16 @@ window.customElements.define(
             isGeoserverStyleAltered:
               JSON.stringify(trainOptionsDeepCopy.geoserver_push) !==
               JSON.stringify(this.tune.train_options.geoserver_push),
+            isPostProcessingAltered:
+              JSON.stringify(trainOptionsDeepCopy.post_processing) !==
+              JSON.stringify(this.tune.train_options.post_processing),
+            isGenericProcessorAltered:
+              JSON.stringify(trainOptionsDeepCopy.generic_processor) !==
+              JSON.stringify(this.tune.train_options.generic_processor),
             model_input_data_spec: trainOptionsDeepCopy.model_input_data_spec,
             geoserver_push: trainOptionsDeepCopy.geoserver_push,
+            post_processing: trainOptionsDeepCopy.post_processing,
+            generic_processor: trainOptionsDeepCopy.generic_processor,
           },
         })
       );
@@ -183,6 +220,7 @@ window.customElements.define(
     async setTune(tune) {
       this.dataSourcesForm.classList.add("display-none");
       this.layersForm.classList.add("display-none");
+      this.postProcessingForm.classList.add("display-none");
       this.inlineLoading.classList.remove("display-none");
 
       this.tune = await app.backend.getTune(tune.id);
@@ -197,18 +235,33 @@ window.customElements.define(
         if (this.tune.train_options.geoserver_push) {
           this.layersForm.setupLayers(this.tune.train_options.geoserver_push);
         }
+        // Merge post_processing and generic_processor for the form
+        const postProcessingConfig = {
+          ...this.tune.train_options.post_processing,
+        };
+        
+        // Add generic_processor to the config if it exists
+        if (this.tune.train_options.generic_processor) {
+          postProcessingConfig.generic_processor = this.tune.train_options.generic_processor;
+        }
+        
+        if (Object.keys(postProcessingConfig).length > 0) {
+          this.postProcessingForm.setupPostProcessing(postProcessingConfig);
+        }
       }
 
       this.validateModal();
       this.dataSourcesForm.classList.remove("display-none");
       this.layersForm.classList.remove("display-none");
+      this.postProcessingForm.classList.remove("display-none");
       this.inlineLoading.classList.add("display-none");
     }
 
     validateModal() {
       if (
         this.dataSourcesForm.validateInputs() &&
-        this.layersForm.validateInputs()
+        this.layersForm.validateInputs() &&
+        this.postProcessingForm.validateInputs()
       ) {
         this.saveButton.removeAttribute("disabled");
       } else {
@@ -221,6 +274,7 @@ window.customElements.define(
       this.payload = {};
       this.dataSourcesForm.resetInputs();
       this.layersForm.resetInputs();
+      this.postProcessingForm.resetInputs();
     }
 
     openModal() {
