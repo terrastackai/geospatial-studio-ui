@@ -519,6 +519,7 @@ export const configureLayer = async (
             rootUrl: `/geofm-geoserver/geoserver/${fmType}/wms/` + item["uri"],
             layer: item["uri"],
             name: item["display_name"],
+            baseLayer: item["baseLayer"] || item["base_layer"] || "earth", // Support for celestial body base layers
             z_index: item["z_index"],
             wmsParams: {
               ...(isNotEmpty(item["sld_body"]) && {
