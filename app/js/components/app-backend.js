@@ -15,6 +15,7 @@ import {
   DELETED_TUNE,
   decodeBase64,
 } from "../utils.js";
+import { getValidMapboxToken } from "../utils/token-validator.js";
 
 window.customElements.define(
   "app-backend",
@@ -1333,7 +1334,7 @@ window.customElements.define(
 
     async getLocationFromLatLong(lat, lng) {
       let res;
-      let token = app.env.geostudio.mapboxToken;
+      let token = getValidMapboxToken(app.env.geostudio.mapboxToken);
       let url;
 
       if (token) {

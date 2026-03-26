@@ -6,6 +6,7 @@
 
 import { searchIcon } from "../../icons.js";
 import asWebComponent from "../../webcomponent.js";
+import { getValidMapboxToken } from "../../utils/token-validator.js";
 
 const template = (obj) => /* HTML */ `
   <style>
@@ -98,8 +99,9 @@ window.customElements.define(
       };
 
       const geocodeInput = this.shadow.getElementById("geocode-input");
+      const validMapboxToken = getValidMapboxToken(app.env.geostudio.mapboxToken);
 
-      if (app.env.geostudio.mapboxToken) {
+      if (validMapboxToken) {
         geocodeInput.addEventListener("input", (e) => {
           geocodeThis(e.target.value);
         });

@@ -5,6 +5,7 @@
 
 
 import asWebComponent from "../../webcomponent.js";
+import { getValidMapboxToken } from "../../utils/token-validator.js";
 import "../../libs/carbon-web-components/skeleton-text.min.js";
 import "../../libs/geoblaze/geoblaze.web.min.js";
 
@@ -64,10 +65,11 @@ window.customElements.define(
     loadBaseMap = () => {
       let basemap;
       let attribution;
-      if (app.env.geostudio.mapboxToken) {
+      const validMapboxToken = getValidMapboxToken(app.env.geostudio.mapboxToken);
+      if (validMapboxToken) {
         basemap =
           "https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v12/tiles/{z}/{x}/{y}?access_token=" +
-          app.env.geostudio.mapboxToken;
+          validMapboxToken;
         attribution =
           '&copy; <a href="https://www.mapbox.com/about/maps/">Mapbox</a>';
       } else {
