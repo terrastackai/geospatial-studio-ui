@@ -611,6 +611,9 @@ window.customElements.define(
             <h4 class="overflow-status-container">
               <span class="overflow-status-icon">
                 ${this.getStatusIcon(example.status)}
+                ${(example?.geoserver_layers?.predicted_layers?.length
+                  && example.status === util.STOPPED_INFERENCE_NOTIFICATION)
+                  ? this.getStatusIcon("STOPPED_WITH_RESULTS"): this.getStatusIcon(example.status)}
               </span>
               <span class="overflow-status-text">Status</span>
               <button class="status-history-button">

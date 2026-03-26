@@ -306,6 +306,8 @@ window.customElements.define(
           <cds-tag
             type="${datasetsObject.status === "Succeeded"
               ? "green"
+              : datasetsObject.status === "Onboarding"
+              ? "orange"
               : datasetsObject.status === "Pending"
               ? "grey"
               : "red"}"

@@ -12,6 +12,7 @@ import "../components/dataset/dataset-preview-panel.js";
 import { goToUrl } from "../router.js";
 import { replaceHttpWithHttps } from "../utils.js";
 import "../components/delete-modal.js";
+import "../components/refresh-timer.js";
 
 const template = () => /* HTML */ `
   <style>
@@ -46,6 +47,10 @@ const template = () => /* HTML */ `
       width: calc(100vw - 8rem);
       z-index: 1;
     }
+
+    refresh-timer {
+      align-self: flex-end;
+    }
   </style>
 
   <img
@@ -59,6 +64,7 @@ const template = () => /* HTML */ `
       breadcrumb-text="Data Catalog"
     ></breadcrumb-button>
     <delete-modal></delete-modal>
+    <refresh-timer></refresh-timer>
     <dataset-action-bar></dataset-action-bar>
     <dataset-information></dataset-information>
     <dataset-preview-panel></dataset-preview-panel>
@@ -83,6 +89,7 @@ window.customElements.define(
       this.datasetPreviewPanel = this.shadow.querySelector(
         "dataset-preview-panel"
       );
+      this.refreshTimer = this.shadow.querySelector("refresh-timer");
 
       //=== Attach Dataset Action Bar Event Listeners ===
       this.deleteModal.addEventListener("confirmed", (e) => {
@@ -131,6 +138,10 @@ window.customElements.define(
         this.datasetActionBar.setTitle(e.detail);
       });
 
+      this.refreshTimer.addEventListener("refresh", () => {
+        this.loadDataset();
+      });
+
       this.datasetId = this.getDatasetIdFromSearchParams();
       this.loadDataset();
     }
@@ -163,6 +174,8 @@ window.customElements.define(
           } else {
             this.datasetPreviewPanel.showEmptyState();
           }
+          this.refreshTimer.stopAutoRefresh();
+          this.refreshTimer.startAutoRefresh();
         } else {
           app.showMessage(
             "Failed to load dataset: " +

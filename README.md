@@ -50,7 +50,7 @@ Then, clone this repo and in the repo root directory:
 - Run `npm run start` to run the dev image using the dev environment. This mounts the `/app` source code directory into the previously-built image so that you can make code changes and refresh the browser to see the changes.
 - Open your browser to `http://localhost:9090` to see the app
 
-Note that you don't need to re-run the `npm run build` step in future, unless there are changes in the `/deploy` folder (e.g. haproxy config changes).
+Note that you don't need to re-run the `npm run build` step in future, unless there are changes in the `/deploy` folder (e.g. nginx config changes).
 
 ### Carbon Web Components
 

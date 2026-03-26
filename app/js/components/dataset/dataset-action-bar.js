@@ -156,7 +156,7 @@ window.customElements.define(
         this.fineTuneButton.removeAttribute("disabled");
       }
 
-      if (datasetObject.logs) {
+      if (datasetObject?.logs?.includes('log') && datasetObject.status !== "Pending") {
         this.downloadButton.removeAttribute("disabled");
       }
     }

@@ -522,6 +522,7 @@ window.customElements.define(
         case "Failed":
           return errorStatusIcon();
         case "Onboarding":
+          return progressStatusIcon();
         case "Scanning":
         case "Pending":
           return progressStatusIcon();
