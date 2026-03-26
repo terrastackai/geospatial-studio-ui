@@ -5,6 +5,7 @@
 
 
 import asWebComponent from "../webcomponent.js";
+import { getValidMapboxToken } from "../utils/token-validator.js";
 import "../libs/carbon-web-components/ui-shell.min.js";
 import "../components/inference/app-map.js";
 import "../components/inference/layer-panel.js";
@@ -188,10 +189,11 @@ window.customElements.define(
         "add-data-layer-modal"
       );
 
-      if (app.env.geostudio.mapboxToken) {
+      const mapboxTokenForSearch = getValidMapboxToken(app.env.geostudio.mapboxToken);
+      if (mapboxTokenForSearch) {
         this.provider = new GeoSearch.MapBoxProvider({
           params: {
-            access_token: app.env.geostudio.mapboxToken,
+            access_token: mapboxTokenForSearch,
           },
         });
       } else {
@@ -315,11 +317,12 @@ window.customElements.define(
       });
 
       this.map = this.shadow.querySelector("#map");
-      if (app.env.geostudio.mapboxToken) {
+      const mapboxTokenForMap = getValidMapboxToken(app.env.geostudio.mapboxToken);
+      if (mapboxTokenForMap) {
         this.map.setMapOptions({
           basemap:
             "https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v12/tiles/{z}/{x}/{y}?access_token=" +
-            app.env.geostudio.mapboxToken,
+            mapboxTokenForMap,
           attribution:
             '&copy; <a href="https://www.mapbox.com/about/maps/">Mapbox</a>',
         });

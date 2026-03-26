@@ -6,6 +6,7 @@
 import asWebComponent from "../../webcomponent.js";
 import * as icons from "../../icons.js";
 import * as util from "../../utils.js";
+import { getValidMapboxToken } from "../../utils/token-validator.js";
 import "../../libs/carbon-web-components/button.min.js";
 import "../../libs/carbon-web-components/tabs.min.js";
 import "../../libs/carbon-web-components/toggle.min.js";
@@ -961,12 +962,13 @@ window.customElements.define(
           midLng
         );
 
+        const validMapboxToken = getValidMapboxToken(app.env.geostudio.mapboxToken);
         if (
           response &&
-          ((app.env.geostudio.mapboxToken && "features" in response) ||
-            (!app.env.geostudio.mapboxToken && "address" in response))
+          ((validMapboxToken && "features" in response) ||
+            (!validMapboxToken && "address" in response))
         ) {
-          if (app.env.geostudio.mapboxToken) {
+          if (validMapboxToken) {
             for (let feature of response.features) {
               if (
                 feature.properties.feature_type === "locality" ||
