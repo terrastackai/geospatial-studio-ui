@@ -562,7 +562,9 @@ window.customElements.define(
         goToUrl("#inference?istryinlab=true&id=" + tryInLapPayload.tune.id);
       } else if (
         tryInLapPayload.isModelSpecAltered ||
-        tryInLapPayload.isGeoserverStyleAltered
+        tryInLapPayload.isGeoserverStyleAltered ||
+        tryInLapPayload.isPostProcessingAltered ||
+        tryInLapPayload.isGenericProcessorAltered
       ) {
         console.log("Update Tune and go to inference page!");
         const payload = {
@@ -578,7 +580,13 @@ window.customElements.define(
             ...(tryInLapPayload.isGeoserverStyleAltered && {
               geoserver_push: tryInLapPayload.geoserver_push,
             }),
+            ...(tryInLapPayload.isPostProcessingAltered && {
+              post_processing: tryInLapPayload.post_processing,
+            }),
           },
+          ...(tryInLapPayload.isGenericProcessorAltered && {
+            generic_processor: tryInLapPayload.generic_processor,
+          }),
         };
         this.updateTune(tryInLapPayload.tune.id, payload, true);
       } else {

@@ -419,6 +419,7 @@ window.customElements.define(
   class extends asWebComponent(HTMLElement) {
     init() {
       this.postProcessing = {};
+      this.lastSelectedProcessorId = null; // Store last selected processor
     }
 
     render() {
@@ -585,10 +586,16 @@ window.customElements.define(
         if (this.genericProcessorToggle.checked) {
           this.genericProcessorForm.classList.remove("display-none");
           await this.loadGenericProcessors();
+          
+          // Restore previously selected processor if it exists
+          if (this.lastSelectedProcessorId) {
+            this.processorDropdown.value = this.lastSelectedProcessorId;
+            this.selectProcessor(this.lastSelectedProcessorId);
+          }
         } else {
           this.genericProcessorForm.classList.add("display-none");
           this.postProcessing.generic_processor = null;
-          this.processorDetails.classList.add("display-none");
+          // Don't clear lastSelectedProcessorId so we can restore it
         }
         this.toggleCardActive(this.genericProcessorCard, this.genericProcessorToggle.checked);
         this.dispatchFormUpdated();
@@ -666,6 +673,9 @@ window.customElements.define(
       const processor = this.genericProcessors.find((p) => p.id === processorId);
 
       if (processor) {
+        // Store the selected processor ID for restoration
+        this.lastSelectedProcessorId = processorId;
+        
         // Update post-processing config
         this.postProcessing.generic_processor = {
           name: processor.name,
@@ -714,19 +724,37 @@ window.customElements.define(
 
       // Set toggle states based on existing values
       if (postProcessing.cloud_masking === "True") {
-        this.cloudMaskingToggle.setAttribute("checked", "");
+        this.cloudMaskingToggle.checked = true;
+        this.toggleCardActive(this.cloudMaskingCard, true);
       }
 
       if (postProcessing.snow_ice_masking === "True") {
-        this.snowIceMaskingToggle.setAttribute("checked", "");
+        this.snowIceMaskingToggle.checked = true;
+        this.toggleCardActive(this.snowIceMaskingCard, true);
       }
 
       if (postProcessing.permanent_water_masking === "True") {
-        this.permanentWaterMaskingToggle.setAttribute("checked", "");
+        this.permanentWaterMaskingToggle.checked = true;
+        this.toggleCardActive(this.permanentWaterMaskingCard, true);
       }
 
       if (postProcessing.ocean_masking === "True") {
-        this.oceanMaskingToggle.setAttribute("checked", "");
+        this.oceanMaskingToggle.checked = true;
+        this.toggleCardActive(this.oceanMaskingCard, true);
+      }
+
+      // Handle mask_from_url
+      if (
+        postProcessing.mask_from_url &&
+        typeof postProcessing.mask_from_url === "object" &&
+        postProcessing.mask_from_url.url
+      ) {
+        this.customMaskToggle.checked = true;
+        this.toggleCardActive(this.customMaskCard, true);
+        this.maskUrlInputs.classList.remove("display-none");
+        this.maskUrlInput.value = postProcessing.mask_from_url.url;
+        this.bufferSizeInput.value =
+          postProcessing.mask_from_url.buffer_size_m || "100";
       }
 
       // Handle generic_processor
@@ -735,7 +763,8 @@ window.customElements.define(
         typeof postProcessing.generic_processor === "object" &&
         postProcessing.generic_processor.name
       ) {
-        this.genericProcessorToggle.setAttribute("checked", "");
+        this.genericProcessorToggle.checked = true;
+        this.toggleCardActive(this.genericProcessorCard, true);
         this.genericProcessorForm.classList.remove("display-none");
         
         // Load processors and select the matching one
@@ -748,19 +777,6 @@ window.customElements.define(
             this.selectProcessor(processor.id);
           }
         });
-      }
-
-      // Handle mask_from_url
-      if (
-        postProcessing.mask_from_url &&
-        typeof postProcessing.mask_from_url === "object" &&
-        postProcessing.mask_from_url.url
-      ) {
-        this.customMaskToggle.setAttribute("checked", "");
-        this.maskUrlInputs.classList.remove("display-none");
-        this.maskUrlInput.value = postProcessing.mask_from_url.url;
-        this.bufferSizeInput.value =
-          postProcessing.mask_from_url.buffer_size_m || "100";
       }
     }
 
@@ -792,12 +808,29 @@ window.customElements.define(
 
     resetInputs() {
       this.postProcessing = {};
-      this.cloudMaskingToggle.removeAttribute("checked");
-      this.snowIceMaskingToggle.removeAttribute("checked");
-      this.permanentWaterMaskingToggle.removeAttribute("checked");
-      this.oceanMaskingToggle.removeAttribute("checked");
-      this.customMaskToggle.removeAttribute("checked");
-      this.genericProcessorToggle.removeAttribute("checked");
+      this.lastSelectedProcessorId = null; // Clear stored processor
+      
+      // Reset all toggles
+      this.cloudMaskingToggle.checked = false;
+      this.toggleCardActive(this.cloudMaskingCard, false);
+      
+      this.snowIceMaskingToggle.checked = false;
+      this.toggleCardActive(this.snowIceMaskingCard, false);
+      
+      this.permanentWaterMaskingToggle.checked = false;
+      this.toggleCardActive(this.permanentWaterMaskingCard, false);
+      
+      this.oceanMaskingToggle.checked = false;
+      this.toggleCardActive(this.oceanMaskingCard, false);
+      
+      this.customMaskToggle.checked = false;
+      this.toggleCardActive(this.customMaskCard, false);
+      this.maskUrlInputs.classList.add("display-none");
+      
+      this.genericProcessorToggle.checked = false;
+      this.toggleCardActive(this.genericProcessorCard, false);
+      this.genericProcessorForm.classList.add("display-none");
+      this.processorDetails.classList.add("display-none");
       this.maskUrlInputs.classList.add("display-none");
       this.maskUrlInput.value = "";
       this.bufferSizeInput.value = "100";
