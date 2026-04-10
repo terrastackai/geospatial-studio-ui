@@ -627,10 +627,30 @@ window.customElements.define(
     async submitLinkInferenceV2() {
       let display_name;
       let fine_tuning_id;
+      let generic_processor_id = null;
       if (this.isModelTuneMode === "model") {
         const model = this.getModel(this.linkModelInput.value);
         display_name = model.display_name;
       } else if (this.isModelTuneMode === "tune") {
+        
+        const tune = this.getSharedTune(this.linkModelInput.value);
+        console.log("tune: " + tune);
+        
+        let train_options = tune?.train_options;
+        // Add generic_processor_id if available
+        // If tune not in cache, fetch from backend
+        if (!train_options) {
+          try {
+            const tuneData = await app.backend.getTune(this.linkModelInput.value);
+            train_options = tuneData?.train_options;
+          } catch (error) {
+            console.error('Failed to fetch tune data:', error);
+            // Handle error appropriately - could throw, show notification, etc.
+          }
+        }
+        // Extract processor ID if train_options exists
+        generic_processor_id = this.check_processor_id(train_options);
+
         display_name = "geofm-sandbox-models";
         fine_tuning_id = this.linkModelInput.value;
       }
@@ -656,11 +676,21 @@ window.customElements.define(
           urls: urls,
         },
         temporal_domain: dates,
+        ...(generic_processor_id && {
+          generic_processor_id: generic_processor_id,
+        }),
       };
 
       this.submitInferenceV2(req);
     }
-
+    check_processor_id(train_options) {
+      if (train_options?.generic_processor?.id) {
+        return train_options.generic_processor.id;
+      }
+      else {
+        return null;
+      }
+    }
     async submitQueryInferenceV2() {
       let display_name;
       let fine_tuning_id;
@@ -668,6 +698,24 @@ window.customElements.define(
         const model = this.getModel(this.queryModelInput.value);
         display_name = model.display_name;
       } else if (this.isModelTuneMode === "tune") {
+
+         let generic_processor_id = null;
+        const tune = this.getSharedTune(this.linkModelInput.value);
+        train_options = tune?.train_options;
+        // Add generic_processor_id if available
+        // If tune not in cache, fetch from backend
+        if (!train_options) {
+          try {
+            const tuneData = await app.backend.getTune(this.linkModelInput.value);
+            train_options = tuneData?.train_options;
+          } catch (error) {
+            console.error('Failed to fetch tune data:', error);
+            // Handle error appropriately - could throw, show notification, etc.
+          }
+        }
+
+        // Extract processor ID if train_options exists
+        generic_processor_id = this.check_processor_id(train_options);
         display_name = "geofm-sandbox-models";
         fine_tuning_id = this.queryModelInput.value;
       }
@@ -710,14 +758,21 @@ window.customElements.define(
         ...(fine_tuning_id && { fine_tuning_id: fine_tuning_id }),
         description: this.queryTitleInput.value,
         location: location,
+        ...(generic_processor_id && {
+          generic_processor_id: generic_processor_id,
+        }),
+
       };
 
       this.submitInferenceV2(req);
     }
 
     async submitInferenceV2(req) {
+      console.log("=== FUNCTION CALLED ==="); //
       let submitInferenceSub;
+      console.log("submitInferenceV2", req);
       if (this.isModelTuneMode === "tune") {
+        console.log("submitInferenceV2 reguest log", req);
         submitInferenceSub = app.backend.tryoutInferenceV2(req);
       } else if (this.isModelTuneMode === "model") {
         submitInferenceSub = app.backend.submitInferenceV2(req);
