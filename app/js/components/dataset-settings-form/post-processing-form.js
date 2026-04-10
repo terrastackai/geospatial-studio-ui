@@ -678,6 +678,7 @@ window.customElements.define(
         
         // Update post-processing config
         this.postProcessing.generic_processor = {
+          id: processor.id,
           name: processor.name,
           description: processor.description || null,
           processor_parameters: processor.processor_parameters || null,

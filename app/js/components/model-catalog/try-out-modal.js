@@ -150,6 +150,9 @@ window.customElements.define(
       this.postProcessingForm.addEventListener("form-submitted", (e) => {
         this.payload.post_processing = e.detail.post_processing;
         // Extract generic_processor if it exists in post_processing
+        // Receives post_processing object from form
+        // Extracts generic_processor to separate field (API expects them separate)
+        // Stores in this.payload
         if (e.detail.post_processing && e.detail.post_processing.generic_processor) {
           this.payload.generic_processor = e.detail.post_processing.generic_processor;
           // Remove it from post_processing as it's a separate field

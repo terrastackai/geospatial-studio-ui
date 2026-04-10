@@ -583,10 +583,10 @@ window.customElements.define(
             ...(tryInLapPayload.isPostProcessingAltered && {
               post_processing: tryInLapPayload.post_processing,
             }),
-          },
           ...(tryInLapPayload.isGenericProcessorAltered && {
             generic_processor: tryInLapPayload.generic_processor,
-          }),
+            }),
+          },
         };
         this.updateTune(tryInLapPayload.tune.id, payload, true);
       } else {

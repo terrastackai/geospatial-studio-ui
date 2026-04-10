@@ -379,10 +379,10 @@ window.customElements.define(
             ...(tryInLabPayload.isPostProcessingAltered && {
               post_processing: tryInLabPayload.post_processing,
             }),
-          },
           ...(tryInLabPayload.isGenericProcessorAltered && {
             generic_processor: tryInLabPayload.generic_processor,
           }),
+        },
         };
         this.updateTune(tryInLabPayload.tune.id, payload, true);
       } else {
