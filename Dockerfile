@@ -55,7 +55,6 @@ RUN mkdir -p /tmp/nginx_client_body /tmp/nginx_proxy /tmp/nginx_fastcgi /tmp/ngi
 COPY --chown=1001:1001 --from=build /usr/src/app/docker-entrypoint.sh docker-entrypoint.sh
 COPY --chown=1001:1001 --from=build /usr/src/app/deploy/start_nginx.sh start_nginx.sh
 COPY --chown=1001:1001 --from=build /usr/src/app/deploy/config/nginx.conf nginx.conf
-COPY --chown=1001:1001 --from=build /usr/src/app/deploy/config/local_nginx.conf local_nginx.conf
 COPY --chown=1001:1001 --from=build /usr/src/app/deploy/config/local_with_ssl_nginx.conf local_with_ssl_nginx.conf
 COPY --chown=1001:1001 --from=build /usr/src/app/deploy/config/404.html errors/404.html
 COPY --chown=1001:1001 --from=build /usr/src/app/deploy/config/env.json env.json
