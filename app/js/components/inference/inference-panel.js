@@ -768,7 +768,6 @@ window.customElements.define(
 
     async submitInferenceV2(req) {
       let submitInferenceSub;
-      console.log("submitInferenceV2", req);
       if (this.isModelTuneMode === "tune") {
         submitInferenceSub = app.backend.tryoutInferenceV2(req);
       } else if (this.isModelTuneMode === "model") {
