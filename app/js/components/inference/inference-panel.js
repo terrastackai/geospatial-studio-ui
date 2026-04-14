@@ -771,7 +771,6 @@ window.customElements.define(
       let submitInferenceSub;
       console.log("submitInferenceV2", req);
       if (this.isModelTuneMode === "tune") {
-        console.log("submitInferenceV2 reguest log", req);
         submitInferenceSub = app.backend.tryoutInferenceV2(req);
       } else if (this.isModelTuneMode === "model") {
         submitInferenceSub = app.backend.submitInferenceV2(req);
