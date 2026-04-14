@@ -634,7 +634,6 @@ window.customElements.define(
       } else if (this.isModelTuneMode === "tune") {
         
         const tune = this.getSharedTune(this.linkModelInput.value);
-        console.log("tune: " + tune);
         
         let train_options = tune?.train_options;
         // Add generic_processor_id if available
