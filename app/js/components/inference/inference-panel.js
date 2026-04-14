@@ -767,7 +767,6 @@ window.customElements.define(
     }
 
     async submitInferenceV2(req) {
-      console.log("=== FUNCTION CALLED ==="); //
       let submitInferenceSub;
       console.log("submitInferenceV2", req);
       if (this.isModelTuneMode === "tune") {
