@@ -9,19 +9,6 @@
 set -e
 
 NGINX_CONFIG_PATH="/home/geostudio/nginx.conf"
-LOCAL_NGINX_CONFIG_PATH="/home/geostudio/local_nginx.conf"
-LOCAL_WITH_SSL_NGINX_CONFIG_PATH="/home/geostudio/local_with_ssl_nginx.conf"
-
-# Determine which nginx config to use
-if [[ -v LOCAL_DEPLOYMENT && "$LOCAL_DEPLOYMENT" == "true" ]]; then
-  mv $LOCAL_NGINX_CONFIG_PATH $NGINX_CONFIG_PATH
-  rm $LOCAL_WITH_SSL_NGINX_CONFIG_PATH
-elif [[ -v LOCAL_DEPLOYMENT && "$LOCAL_DEPLOYMENT" == "true_with_ssl" ]]; then
-  mv $LOCAL_WITH_SSL_NGINX_CONFIG_PATH $NGINX_CONFIG_PATH
-  rm $LOCAL_NGINX_CONFIG_PATH
-else
-  rm $LOCAL_NGINX_CONFIG_PATH $LOCAL_WITH_SSL_NGINX_CONFIG_PATH
-fi
 
 configPaths=("$NGINX_CONFIG_PATH" "/home/geostudio/env.json")
 

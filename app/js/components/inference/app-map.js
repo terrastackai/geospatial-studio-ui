@@ -11,6 +11,7 @@ import {
   getTimestampsfromLayers,
   hideCsTimeline,
 } from "../../utils.js";
+import { getValidCesiumToken, getValidMapboxToken } from "../../utils/token-validator.js";
 import DataSource from "../../datasource/datasource.js";
 import "../inference/timeline-control.js";
 import "../inference/scale-bar.js";
@@ -1126,9 +1127,9 @@ window.customElements.define(
       // this.map = L.map(this.shadow.querySelector('#map'), {zoomControl: false})
       //   .setView([this.center.lat, this.center.lng], this.zoom);
 
-      Cesium.Ion.defaultAccessToken = app.env.geostudio.cesiumToken;
-
-      const mapboxToken = app.env.geostudio.mapboxToken;
+      // Validate tokens before use
+      Cesium.Ion.defaultAccessToken = getValidCesiumToken(app.env.geostudio.cesiumToken);
+      const validMapboxToken = getValidMapboxToken(app.env.geostudio.mapboxToken);
 
       //Add mapbox basemap as default for when there is no Cesium Ion token
 
@@ -1196,7 +1197,7 @@ window.customElements.define(
       });
 
       const mapboxLayer = new Cesium.UrlTemplateImageryProvider({
-        url: `https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v12/tiles/{z}/{x}/{y}?access_token=${mapboxToken}`,
+        url: `https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v12/tiles/{z}/{x}/{y}?access_token=${validMapboxToken}`,
         tilingScheme: new Cesium.WebMercatorTilingScheme(),
         tileWidth: 256,
         tileHeight: 256,
@@ -1217,7 +1218,7 @@ window.customElements.define(
 
       let mapSettings;
 
-      if (mapboxToken) {
+      if (validMapboxToken) {
         mapSettings = {
           terrainProviderViewModels: terrainSources,
           selectionIndicator: false,
@@ -1240,7 +1241,7 @@ window.customElements.define(
 
       if (Cesium.Ion.defaultAccessToken) {
         mapSettings.terrain = Cesium.Terrain.fromWorldTerrain();
-      } else if (mapboxToken) {
+      } else if (validMapboxToken) {
         mapSettings.selectedImageryProviderViewModel = mapboxViewModel;
       } else {
         const osmLayer = new Cesium.OpenStreetMapImageryProvider({

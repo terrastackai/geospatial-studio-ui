@@ -15,6 +15,7 @@ import {
   DELETED_TUNE,
   decodeBase64,
 } from "../utils.js";
+import { getValidMapboxToken } from "../utils/token-validator.js";
 
 window.customElements.define(
   "app-backend",
@@ -429,6 +430,28 @@ window.customElements.define(
 
       return res.status;
     }
+    async getGenericProcessors() {
+      let res;
+      let method = "GET";
+
+      app.progress.show();
+
+      try {
+        res = await fetch(`/studio-gateway/v2/generic-processor`, {
+          headers: this.getHeaders(),
+          method: method,
+        });
+      } catch (error) {
+        console.log(error.message);
+        throw error;
+      }
+
+      app.progress.hide();
+
+      let json = await res.json();
+      return json;
+    }
+
 
     //=== Dataset Endpoints ===//
 
@@ -1311,7 +1334,7 @@ window.customElements.define(
 
     async getLocationFromLatLong(lat, lng) {
       let res;
-      let token = app.env.geostudio.mapboxToken;
+      let token = getValidMapboxToken(app.env.geostudio.mapboxToken);
       let url;
 
       if (token) {
