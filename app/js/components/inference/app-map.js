@@ -224,8 +224,69 @@ window.customElements.define(
       this.attribution = mapConfig.attribution;
     }
 
+    /**
+     * Switch the base layer based on celestial body
+     * @param {string} celestialBody - 'earth', 'moon', or 'mars'
+     */
+    switchBaseLayer(celestialBody) {
+      if (!this.map || !celestialBody) return;
+
+      // Normalize to lowercase
+      const targetBody = celestialBody.toLowerCase();
+
+      // Don't switch if already on the correct base layer
+      if (this.currentBaseLayer === targetBody) return;
+
+      const viewer = this.map;
+      const imageryLayers = viewer.imageryLayers;
+
+      // Get the base layer (always at index 0)
+      const baseLayer = imageryLayers.get(0);
+
+      if (!baseLayer) return;
+
+      // Determine which provider to use
+      let newProvider = null;
+
+      switch(targetBody) {
+        case 'moon':
+          newProvider = this.celestialBodyProviders.moon;
+          console.log('Switching to Moon base layer');
+          break;
+        case 'mars':
+          newProvider = this.celestialBodyProviders.mars;
+          console.log('Switching to Mars base layer');
+          break;
+        case 'earth':
+        default:
+          // For Earth, we don't need to do anything as it's the default
+          // User can manually select Earth layers from the base layer picker
+          console.log('Switching to Earth base layer (use base layer picker for specific Earth imagery)');
+          this.currentBaseLayer = 'earth';
+          return;
+      }
+
+      if (newProvider) {
+        // Remove the current base layer
+        imageryLayers.remove(baseLayer, false);
+
+        // Add the new base layer at index 0
+        const newLayer = imageryLayers.addImageryProvider(newProvider, 0);
+
+        // Update current base layer tracking
+        this.currentBaseLayer = targetBody;
+
+        console.log(`Base layer switched to: ${targetBody}`);
+      }
+    }
+
     addWMSLayer(layerData) {
       if (!this.map) throw new Error("Please call loadMap() first");
+
+      // Check if layer specifies a base layer (celestial body) and switch if needed
+      if (layerData.baseLayer) {
+        this.switchBaseLayer(layerData.baseLayer);
+      }
 
       // lookup CRS
       if (layerData.params.crs !== undefined) {
@@ -1091,6 +1152,50 @@ window.customElements.define(
         );
       }
 
+      // Moon WMS Provider
+      const moonWmsProvider = new Cesium.WebMapServiceImageryProvider({
+        url: 'https://wms.im-ldi.com/',
+        layers: 'luna_wac_global',
+        parameters: {
+          service: 'WMS',
+          format: 'image/png',
+          transparent: false,
+          crs: 'EPSG:3857',
+          dpiMode: 7
+        },
+        tilingScheme: new Cesium.WebMercatorTilingScheme()
+      });
+
+      const moonViewModel = new Cesium.ProviderViewModel({
+        name: 'Moon (Lunar WAC)',
+        iconUrl: Cesium.buildModuleUrl('Assets/Textures/moonSmall.jpg'),
+        tooltip: 'Lunar Reconnaissance Orbiter Wide Angle Camera Global Mosaic',
+        category: 'Celestial Bodies',
+        creationFunction: () => moonWmsProvider
+      });
+
+      // Mars WMS Provider
+      const marsWmsProvider = new Cesium.WebMapServiceImageryProvider({
+        url: 'https://wms.im-ldi.com/',
+        layers: 'mars_viking_mdim2.1',
+        parameters: {
+          service: 'WMS',
+          format: 'image/png',
+          transparent: false,
+          crs: 'EPSG:3857',
+          dpiMode: 7
+        },
+        tilingScheme: new Cesium.WebMercatorTilingScheme()
+      });
+
+      const marsViewModel = new Cesium.ProviderViewModel({
+        name: 'Mars (Viking MDIM 2.1)',
+        iconUrl: Cesium.buildModuleUrl('Assets/Textures/moonSmall.jpg'), // Using moon texture as placeholder
+        tooltip: 'Mars Viking Mission MDIM 2.1 Global Mosaic',
+        category: 'Celestial Bodies',
+        creationFunction: () => marsWmsProvider
+      });
+
       const mapboxLayer = new Cesium.UrlTemplateImageryProvider({
         url: `https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v12/tiles/{z}/{x}/{y}?access_token=${validMapboxToken}`,
         tilingScheme: new Cesium.WebMercatorTilingScheme(),
@@ -1107,6 +1212,10 @@ window.customElements.define(
         creationFunction: () => mapboxLayer,
       });
 
+      // Add Moon and Mars to imagery sources
+      imagerySources.push(moonViewModel);
+      imagerySources.push(marsViewModel);
+
       let mapSettings;
 
       if (validMapboxToken) {
@@ -1122,6 +1231,13 @@ window.customElements.define(
           imageryProviderViewModels: imagerySources,
         };
       }
+
+      // Store celestial body providers for programmatic switching
+      this.celestialBodyProviders = {
+        moon: moonWmsProvider,
+        mars: marsWmsProvider
+      };
+      this.currentBaseLayer = 'earth'; // Track current base layer
 
       if (Cesium.Ion.defaultAccessToken) {
         mapSettings.terrain = Cesium.Terrain.fromWorldTerrain();
