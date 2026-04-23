@@ -286,6 +286,9 @@ window.customElements.define(
       // Check if layer specifies a base layer (celestial body) and switch if needed
       if (layerData.baseLayer) {
         this.switchBaseLayer(layerData.baseLayer);
+      } else {
+        // If no base layer specified, ensure we're on Earth
+        this.switchBaseLayer('earth');
       }
 
       // lookup CRS

@@ -53,7 +53,15 @@ mkdir -p ./app/js/libs/yaml/ && cp -R ./node_modules/js-yaml/dist/js-yaml.mjs ./
 rm -rfv ./app/js/libs/eventsource/*
 mkdir -p ./app/js/libs/eventsource/ && cp -R ./node_modules/eventsource/example/eventsource-polyfill.js ./app/js/libs/eventsource/
 
+# marked
+rm -rfv ./app/js/libs/marked/*
+mkdir -p ./app/js/libs/marked/ && cp ./node_modules/marked/lib/marked.esm.js ./app/js/libs/marked/marked.js
+
+# dompurify
+rm -rfv ./app/js/libs/dompurify/*
+mkdir -p ./app/js/libs/dompurify/ && cp ./node_modules/dompurify/dist/purify.es.mjs ./app/js/libs/dompurify/purify.js
+
 # cesium
-# -- NOTE - custom changes have been made to cesium so copying from node_moduels will overwrite those changes -- #
+# -- NOTE - custom changes have been made to cesium so copying from node_moduels will overwrite those changes -- #
 # rm -rfv ./app/js/libs/cesium/*
 # mkdir -p ./app/js/libs/cesium/ && cp -R ./node_modules/cesium/Build/Cesium/* ./app/js/libs/cesium/
