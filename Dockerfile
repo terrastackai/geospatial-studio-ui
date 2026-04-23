@@ -47,17 +47,17 @@ WORKDIR $HOME
 
 # Create necessary directories with proper permissions for OpenShift
 # OpenShift runs with random UIDs, so we need world-writable directories
-RUN mkdir -p /tmp/nginx_client_body /tmp/nginx_proxy /tmp/nginx_fastcgi /tmp/nginx_uwsgi /tmp/nginx_scgi /home/geostudio/errors && \
+RUN mkdir -p /tmp/nginx_client_body /tmp/nginx_proxy /tmp/nginx_fastcgi /tmp/nginx_uwsgi /tmp/nginx_scgi /home/geostudio/errors /home/geostudio/health && \
     chmod -R 777 /tmp/nginx_client_body /tmp/nginx_proxy /tmp/nginx_fastcgi /tmp/nginx_uwsgi /tmp/nginx_scgi && \
-    chown -R 1001:0 /home/geostudio/errors && \
-    chmod -R g=u /home/geostudio/errors
+    chown -R 1001:0 /home/geostudio/errors /home/geostudio/health && \
+    chmod -R g=u /home/geostudio/errors /home/geostudio/health
 
 COPY --chown=1001:1001 --from=build /usr/src/app/docker-entrypoint.sh docker-entrypoint.sh
 COPY --chown=1001:1001 --from=build /usr/src/app/deploy/start_nginx.sh start_nginx.sh
 COPY --chown=1001:1001 --from=build /usr/src/app/deploy/config/nginx.conf nginx.conf
-COPY --chown=1001:1001 --from=build /usr/src/app/deploy/config/local_nginx.conf local_nginx.conf
-COPY --chown=1001:1001 --from=build /usr/src/app/deploy/config/local_with_ssl_nginx.conf local_with_ssl_nginx.conf
 COPY --chown=1001:1001 --from=build /usr/src/app/deploy/config/404.html errors/404.html
+COPY --chown=1001:1001 --from=build /usr/src/app/deploy/config/health/liveness.html health/liveness.html
+COPY --chown=1001:1001 --from=build /usr/src/app/deploy/config/health/readiness.html health/readiness.html
 COPY --chown=1001:1001 --from=build /usr/src/app/deploy/config/env.json env.json
 # Set permissions for OpenShift compatibility (group 0 = root group)
 RUN chown -R 1001:0 $HOME && \
