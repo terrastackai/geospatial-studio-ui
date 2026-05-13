@@ -8,7 +8,9 @@
     "build": "./build.sh dev",
     "test": "web-test-runner --coverage",
     "test:watch": "web-test-runner --watch",
-    "test-e2e": "npx cypress open"
+    "test-e2e": "npx cypress open",
+    "format": "prettier --write \"app/**/*.{js,css,html,json}\"",
+    "format:check": "prettier --check \"app/**/*.{js,css,html,json}\""
   },
   "author": "",
   "private": true,
@@ -34,6 +36,7 @@
     "@open-wc/testing": "^3.2.0",
     "@web/test-runner": "^0.14.0",
     "cypress-lit": "^0.0.8",
+    "prettier": "^3.8.3",
     "sinon": "^18.0.0"
   }
 }
