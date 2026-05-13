@@ -173,6 +173,10 @@ window.customElements.define(
 
       app.progress.hide();
 
+      if (!res) {
+        return {};
+      }
+
       let json = await res.json();
       return json;
     }
@@ -759,6 +763,23 @@ window.customElements.define(
       } catch (e) {
         app.progress.hide();
         throw e;
+      }
+
+      // Check if response exists before trying to parse JSON
+      if (!res) {
+        throw new Error("Failed to fetch tune: No response received");
+      }
+
+      if (!res.ok && res.status !== 404) {
+        const errorText = await res.text();
+        throw new Error(`HTTP error! status: ${res.status}, message: ${errorText}`);
+      }
+
+      // Check if response has content before parsing JSON
+      const contentType = res.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        console.warn("Response does not contain JSON");
+        return {};
       }
 
       let json = await res.json();
