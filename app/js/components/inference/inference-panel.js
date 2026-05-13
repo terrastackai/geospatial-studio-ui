@@ -700,7 +700,7 @@ window.customElements.define(
 
          let generic_processor_id = null;
         const tune = this.getSharedTune(this.linkModelInput.value);
-        train_options = tune?.train_options;
+        let train_options = tune?.train_options;
         // Add generic_processor_id if available
         // If tune not in cache, fetch from backend
         if (!train_options) {
