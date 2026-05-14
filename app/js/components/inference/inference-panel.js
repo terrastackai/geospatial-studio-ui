@@ -359,11 +359,11 @@ const template = (obj) => /* HTML */ `
         <cds-button
           id="date-availability-button"
           icon-layout
-          title="Check date availablity"
+          title="Check data availability"
           kind="secondary"
           size="sm"
         >
-          Check date availablity
+          Check data availability
           ${icons.calendarIcon({ slot: "icon", width: 16, height: 16 })}
         </cds-button>
         <div id="available-dates-container"></div>
@@ -1165,7 +1165,7 @@ window.customElements.define(
           this.scrollToEnd();
 
           app.showMessage(
-            "Successfully retrived dates in the given date range",
+            "Confirmed data availability in the given date range",
             "",
             "success",
             5000,
