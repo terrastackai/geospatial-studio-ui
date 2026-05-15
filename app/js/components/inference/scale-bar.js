@@ -32,7 +32,7 @@ const template = (obj) => /* HTML */ `
     }
 
     #scale-bar-label {
-      color: var(--cds-text-02, #525252);
+      color: var(--cds-text-02, #909090);
       font-size: var(--cds-label-01-font-size, 0.75rem);
       font-weight: var(--cds-label-01-font-weight, 400);
       letter-spacing: var(--cds-label-01-letter-spacing, 0.32px);
