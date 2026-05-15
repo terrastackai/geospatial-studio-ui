@@ -584,6 +584,7 @@ window.customElements.define(
         if (this.tabs.value === "link") {
           this.submitLinkInferenceV2();
         }
+
       });
 
       this.handleDataCheckerButtonState();
@@ -698,14 +699,15 @@ window.customElements.define(
         const model = this.getModel(this.queryModelInput.value);
         display_name = model.display_name;
       } else if (this.isModelTuneMode === "tune") {
-        const tune = this.getSharedTune(this.linkModelInput.value);
+        const tune = this.getSharedTune(this.queryModelInput.value);
+
         let train_options = tune?.train_options;
         // Add generic_processor_id if available
         // If tune not in cache, fetch from backend
         if (!train_options) {
           try {
             const tuneData = await app.backend.getTune(
-              this.linkModelInput.value,
+              this.queryModelInput.value,
             );
             train_options = tuneData?.train_options;
           } catch (error) {
