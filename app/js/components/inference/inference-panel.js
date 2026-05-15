@@ -359,11 +359,11 @@ const template = (obj) => /* HTML */ `
         <cds-button
           id="date-availability-button"
           icon-layout
-          title="Check date availablity"
+          title="Check data availability"
           kind="secondary"
           size="sm"
         >
-          Check date availablity
+          Check data availability
           ${icons.calendarIcon({ slot: "icon", width: 16, height: 16 })}
         </cds-button>
         <div id="available-dates-container"></div>
@@ -425,7 +425,7 @@ export const returnValidatedQueryFields = (
   titleValue,
   inferenceTaskValue,
   startDateValue,
-  endDateValue
+  endDateValue,
 ) => {
   return titleValue && inferenceTaskValue && startDateValue && endDateValue;
 };
@@ -446,7 +446,7 @@ window.customElements.define(
       this.closeButton = this.shadow.querySelector("#panel-close-button");
       this.tabs = this.shadow.querySelector("cds-tabs");
       this.boundingBoxToggle = this.shadow.querySelector(
-        "#bounding-box-toggle"
+        "#bounding-box-toggle",
       );
       this.boundingBoxInput = this.shadow.querySelector("#bounding-box-input");
       this.queryTitleInput = this.shadow.querySelector("#query-title-input");
@@ -455,20 +455,20 @@ window.customElements.define(
       this.startDateInput = this.shadow.querySelector("#start-date-input");
       this.endDateInput = this.shadow.querySelector("#end-date-input");
       this.availableDatesContainer = this.shadow.querySelector(
-        "#available-dates-container"
+        "#available-dates-container",
       );
       this.URLInput = this.shadow.querySelector("#url-input");
       this.linkTitleInput = this.shadow.querySelector("#link-title-input");
       this.linkLocationInput = this.shadow.querySelector(
-        "#link-location-input"
+        "#link-location-input",
       );
       this.linkModelInput = this.shadow.querySelector("#link-model-input");
       this.runButton = this.shadow.querySelector("#run-button");
       this.modelsTunesRadioBtnGroup = this.shadow.querySelector(
-        "#models_tunes_radio_btn_group"
+        "#models_tunes_radio_btn_group",
       );
       this.urlModelsTunesRadioBtnGroup = this.shadow.querySelector(
-        "#url_models_tunes_radio_btn_group"
+        "#url_models_tunes_radio_btn_group",
       );
       this.modelsTunesRadioBtnGroup.style.display = "none";
       this.urlModelsTunesRadioBtnGroup.style.display = "none";
@@ -480,7 +480,7 @@ window.customElements.define(
           this.clearComboBox();
           this.setupModelTuneComboBoxes();
           this.urlModelsTunesRadioBtnGroup.value = this.isModelTuneMode;
-        }
+        },
       );
       this.urlModelsTunesRadioBtnGroup.addEventListener(
         "cds-radio-button-group-changed",
@@ -489,7 +489,7 @@ window.customElements.define(
           this.clearComboBox();
           this.setupModelTuneComboBoxes();
           this.modelsTunesRadioBtnGroup.value = this.isModelTuneMode;
-        }
+        },
       );
 
       this.startDateInput.addEventListener("click", () => {
@@ -528,7 +528,7 @@ window.customElements.define(
       this.boundingBoxInput.addEventListener("input", () => {
         this.boundingBoxInput.value = this.boundingBoxInput.value.replaceAll(
           ",",
-          ";"
+          ";",
         );
         this.flyToBoundingBox();
 
@@ -551,7 +551,7 @@ window.customElements.define(
       });
 
       this.dateAvailablityButton = this.shadow.querySelector(
-        "#date-availability-button"
+        "#date-availability-button",
       );
 
       this.dateAvailablityButton.addEventListener("click", () => {
@@ -584,6 +584,7 @@ window.customElements.define(
         if (this.tabs.value === "link") {
           this.submitLinkInferenceV2();
         }
+
       });
 
       this.handleDataCheckerButtonState();
@@ -619,7 +620,7 @@ window.customElements.define(
 
     getSharedTune(input) {
       const sharedTune = this.sharedTunes.find(
-        (sharedTune) => sharedTune.id === input
+        (sharedTune) => sharedTune.id === input,
       );
       return sharedTune;
     }
@@ -632,18 +633,19 @@ window.customElements.define(
         const model = this.getModel(this.linkModelInput.value);
         display_name = model.display_name;
       } else if (this.isModelTuneMode === "tune") {
-        
         const tune = this.getSharedTune(this.linkModelInput.value);
-        
+
         let train_options = tune?.train_options;
         // Add generic_processor_id if available
         // If tune not in cache, fetch from backend
         if (!train_options) {
           try {
-            const tuneData = await app.backend.getTune(this.linkModelInput.value);
+            const tuneData = await app.backend.getTune(
+              this.linkModelInput.value,
+            );
             train_options = tuneData?.train_options;
           } catch (error) {
-            console.error('Failed to fetch tune data:', error);
+            console.error("Failed to fetch tune data:", error);
             // Handle error appropriately - could throw, show notification, etc.
           }
         }
@@ -658,7 +660,7 @@ window.customElements.define(
 
       // TODO: Remove this simulation after a facility to add date for each url is provided
       const fakeDate = new Date().setDate(
-        new Date().getDate() - urls.length + 1
+        new Date().getDate() - urls.length + 1,
       );
       const dates = urls.map((url, index) => {
         const date = new Date(fakeDate);
@@ -685,30 +687,31 @@ window.customElements.define(
     check_processor_id(train_options) {
       if (train_options?.generic_processor?.id) {
         return train_options.generic_processor.id;
-      }
-      else {
+      } else {
         return null;
       }
     }
     async submitQueryInferenceV2() {
       let display_name;
       let fine_tuning_id;
+      let generic_processor_id = null;
       if (this.isModelTuneMode === "model") {
         const model = this.getModel(this.queryModelInput.value);
         display_name = model.display_name;
       } else if (this.isModelTuneMode === "tune") {
+        const tune = this.getSharedTune(this.queryModelInput.value);
 
-         let generic_processor_id = null;
-        const tune = this.getSharedTune(this.linkModelInput.value);
-        train_options = tune?.train_options;
+        let train_options = tune?.train_options;
         // Add generic_processor_id if available
         // If tune not in cache, fetch from backend
         if (!train_options) {
           try {
-            const tuneData = await app.backend.getTune(this.linkModelInput.value);
+            const tuneData = await app.backend.getTune(
+              this.queryModelInput.value,
+            );
             train_options = tuneData?.train_options;
           } catch (error) {
-            console.error('Failed to fetch tune data:', error);
+            console.error("Failed to fetch tune data:", error);
             // Handle error appropriately - could throw, show notification, etc.
           }
         }
@@ -741,7 +744,7 @@ window.customElements.define(
         southWest.lat,
         northEast.lat,
         southWest.lng,
-        northEast.lng
+        northEast.lng,
       );
 
       let req = {
@@ -760,7 +763,6 @@ window.customElements.define(
         ...(generic_processor_id && {
           generic_processor_id: generic_processor_id,
         }),
-
       };
 
       this.submitInferenceV2(req);
@@ -782,7 +784,7 @@ window.customElements.define(
             this.dispatchEvent(
               new CustomEvent("inference-response", {
                 detail: response,
-              })
+              }),
             );
             app.showMessage("Inference Submitted", "", "info", 5000);
 
@@ -792,7 +794,7 @@ window.customElements.define(
               "Inference Failed",
               response?.detail,
               "error",
-              5000
+              5000,
             );
             this.runButton.removeAttribute("disabled");
           }
@@ -1010,10 +1012,12 @@ window.customElements.define(
       try {
         const response = await app.backend.getLocationFromLatLong(
           midLat,
-          midLng
+          midLng,
         );
 
-        const validMapboxToken = getValidMapboxToken(app.env.geostudio.mapboxToken);
+        const validMapboxToken = getValidMapboxToken(
+          app.env.geostudio.mapboxToken,
+        );
         if (
           response &&
           ((validMapboxToken && "features" in response) ||
@@ -1047,7 +1051,7 @@ window.customElements.define(
               (response?.message ? response.message : "Unknown error"),
             "",
             "error",
-            5000
+            5000,
           );
         }
       } catch (error) {
@@ -1057,7 +1061,7 @@ window.customElements.define(
           "An error occured while loading the bounding box",
           "",
           "error",
-          5000
+          5000,
         );
       }
       return location;
@@ -1084,7 +1088,7 @@ window.customElements.define(
         model_input_data_spec = tune?.train_options?.model_input_data_spec?.[0];
         if (!model_input_data_spec) {
           const tuneToCheckData = await app.backend.getTune(
-            this.queryModelInput.value
+            this.queryModelInput.value,
           );
           model_input_data_spec =
             tuneToCheckData?.train_options?.model_input_data_spec?.[0];
@@ -1141,7 +1145,7 @@ window.customElements.define(
                 : "Unknown error"),
             "",
             "error",
-            5000
+            5000,
           );
           this.dateAvailablityButton.removeAttribute("disabled");
           return;
@@ -1163,10 +1167,10 @@ window.customElements.define(
           this.scrollToEnd();
 
           app.showMessage(
-            "Successfully retrived dates in the given date range",
+            "Confirmed data availability in the given date range",
             "",
             "success",
-            5000
+            5000,
           );
         } else if ("message" in res) {
           if (!res.message.includes("No nearest")) {
@@ -1190,7 +1194,7 @@ window.customElements.define(
               .replace("Aft_Days", "dates after"),
             "",
             "error",
-            5000
+            5000,
           );
         } else {
           app.showMessage(
@@ -1200,7 +1204,7 @@ window.customElements.define(
                 : "Unknown error"),
             "",
             "error",
-            5000
+            5000,
           );
           this.dateAvailablityButton.removeAttribute("disabled");
         }
@@ -1210,7 +1214,7 @@ window.customElements.define(
           "An error occured while checking data availablity",
           "",
           "error",
-          5000
+          5000,
         );
         this.dateAvailablityButton.removeAttribute("disabled");
       }
@@ -1230,7 +1234,7 @@ window.customElements.define(
       let model;
       if (model_name) {
         model = this.models.find(
-          (md) => md.name.toLowerCase() === model_name.toLowerCase()
+          (md) => md.name.toLowerCase() === model_name.toLowerCase(),
         );
       }
       if (model && model.model_style) {
@@ -1283,5 +1287,5 @@ window.customElements.define(
         observer.observe(shadowRoot, { childList: true, subtree: true });
       }
     }
-  }
+  },
 );

@@ -1,8 +1,7 @@
 /*
-* © Copyright IBM Corporation 2025
-* SPDX-License-Identifier: Apache-2.0
-*/
-
+ * © Copyright IBM Corporation 2025
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 import asWebComponent from "../webcomponent.js";
 import {
@@ -164,17 +163,36 @@ window.customElements.define(
             headers: this.getHeaders(),
             method: method,
             body: JSON.stringify(payload),
+            redirect: 'follow', // Explicitly follow redirects
           }
         );
       } catch (error) {
         console.log(error.message);
+        app.progress.hide();
         throw error;
       }
 
       app.progress.hide();
 
-      let json = await res.json();
-      return json;
+      if (!res) {
+        throw new Error("Failed to tryout inference: No response received");
+      }
+
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(`HTTP error! status: ${res.status}, message: ${errorText}`);
+      }
+
+      // Check if response has content before parsing JSON
+      const contentType = res.headers.get("content-type");
+      if (contentType && contentType.includes("application/json")) {
+        let json = await res.json();
+        return json;
+      } else {
+        // If no JSON content, return empty object or handle accordingly
+        console.warn("Response does not contain JSON");
+        return {};
+      }
     }
 
     async checkDataAvailability(req) {
@@ -451,7 +469,6 @@ window.customElements.define(
       let json = await res.json();
       return json;
     }
-
 
     //=== Dataset Endpoints ===//
 
@@ -759,6 +776,23 @@ window.customElements.define(
       } catch (e) {
         app.progress.hide();
         throw e;
+      }
+
+      // Check if response exists before trying to parse JSON
+      if (!res) {
+        throw new Error("Failed to fetch tune: No response received");
+      }
+
+      if (!res.ok && res.status !== 404) {
+        const errorText = await res.text();
+        throw new Error(`HTTP error! status: ${res.status}, message: ${errorText}`);
+      }
+
+      // Check if response has content before parsing JSON
+      const contentType = res.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        console.warn("Response does not contain JSON");
+        return {};
       }
 
       let json = await res.json();
@@ -1381,3 +1415,4 @@ window.customElements.define(
     // }
   }
 );
+
