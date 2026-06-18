@@ -35,7 +35,7 @@ RUN rm -rf $OUTPUT/app/env.json
 
 
 ### STAGE 2: Run ###
-FROM alpine:3.22
+FROM alpine:latest
 
 RUN addgroup -S -g 1001 geostudio && adduser -S -u 1001 -G geostudio geostudio
 
