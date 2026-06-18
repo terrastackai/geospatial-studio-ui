@@ -8,7 +8,7 @@
 
 
 ### STAGE 1: Build UI ###
-FROM node:20-alpine3.22 AS build
+FROM node:20-alpine3.22@sha256:2f46fd49c767554c089a5eb219115147e12a17e5c0a3d8923e4c8c5b3c3f1d8e AS build
 
 WORKDIR /usr/src/app
 
@@ -35,11 +35,14 @@ RUN rm -rf $OUTPUT/app/env.json
 
 
 ### STAGE 2: Run ###
-FROM alpine:latest
+FROM alpine:3.22@sha256:beefdbd8a1da6d2915566fde36db9db0b524eb737fc57cd1367effd16dc0d06d
 
 RUN addgroup -S -g 1001 geostudio && adduser -S -u 1001 -G geostudio geostudio
 
-RUN apk add --no-cache nginx bash gettext
+RUN apk update && \
+    apk upgrade --no-cache && \
+    apk add --no-cache nginx bash gettext && \
+    rm -rf /var/cache/apk/*
 
 ENV HOME=/home/geostudio
 
