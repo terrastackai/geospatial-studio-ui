@@ -1145,7 +1145,11 @@ window.customElements.define(
           return (
             basemap._category != "Cesium ion" &&
             !basemap.name.includes("ArcGIS") &&
-            !basemap.name.includes("Esri")
+            !basemap.name.includes("Esri") &&
+            !basemap.name.includes("OpenStreetMap") &&
+            !basemap.name.includes("Stadia") &&
+            !basemap.name.includes("Stamen") &&
+            !basemap.name.includes("Sentinel")
           );
         });
 
@@ -1214,7 +1218,21 @@ window.customElements.define(
         creationFunction: () => mapboxLayer,
       });
 
-      // Add Moon and Mars to imagery sources
+      const geoserverBasemapProvider = new Cesium.WebMapServiceImageryProvider({
+        url: "/geofm-geoserver/geoserver/wms",
+        layers: "basemap:world",
+        parameters: { transparent: false, format: "image/png" },
+      });
+
+      const geoserverViewModel = new Cesium.ProviderViewModel({
+        name: "Natural Earth (GeoServer)",
+        iconUrl: Cesium.buildModuleUrl("Assets/Textures/NaturalEarthII/NaturalEarthII_2_0.jpg"),
+        tooltip: "Natural Earth basemap served from the internal GeoServer instance",
+        category: "GeoServer",
+        creationFunction: () => geoserverBasemapProvider,
+      });
+
+      // Add Moon, Mars, and GeoServer basemap to imagery sources
       imagerySources.push(moonViewModel);
       imagerySources.push(marsViewModel);
 
@@ -1224,13 +1242,13 @@ window.customElements.define(
         mapSettings = {
           terrainProviderViewModels: terrainSources,
           selectionIndicator: false,
-          imageryProviderViewModels: [...imagerySources, mapboxViewModel],
+          imageryProviderViewModels: [...imagerySources, mapboxViewModel, geoserverViewModel],
         };
       } else {
         mapSettings = {
           terrainProviderViewModels: terrainSources,
           selectionIndicator: false,
-          imageryProviderViewModels: imagerySources,
+          imageryProviderViewModels: [...imagerySources, geoserverViewModel],
         };
       }
 
@@ -1246,12 +1264,7 @@ window.customElements.define(
       } else if (validMapboxToken) {
         mapSettings.selectedImageryProviderViewModel = mapboxViewModel;
       } else {
-        const wmsLayer = new Cesium.WebMapServiceImageryProvider({
-          url: "/geofm-geoserver/geoserver/wms",
-          layers: "basemap:world",
-          parameters: { transparent: false, format: "image/png" },
-        });
-        mapSettings.imageryProvider = wmsLayer;
+        mapSettings.selectedImageryProviderViewModel = geoserverViewModel;
       }
 
       this.map = new Cesium.Viewer(
