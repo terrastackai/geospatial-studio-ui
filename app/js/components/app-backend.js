@@ -1367,24 +1367,12 @@ window.customElements.define(
     }
 
     async getLocationFromLatLong(lat, lng) {
-      let res;
-      let token = getValidMapboxToken(app.env.geostudio.mapboxToken);
-      let url;
+      const token = getValidMapboxToken(app.env.geostudio.mapboxToken);
+      if (!token) return null;
 
-      if (token) {
-        url = `https://api.mapbox.com/search/geocode/v6/reverse?longitude=${lng}&latitude=${lat}&access_token=${token}`;
-      } else {
-        url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`;
-      }
-
-      try {
-        res = await fetch(url);
-      } catch (e) {
-        throw e;
-      }
-
-      let json = await res.json();
-      return json;
+      const url = `https://api.mapbox.com/search/geocode/v6/reverse?longitude=${lng}&latitude=${lat}&access_token=${token}`;
+      const res = await fetch(url);
+      return res.json();
     }
 
     //===========================//

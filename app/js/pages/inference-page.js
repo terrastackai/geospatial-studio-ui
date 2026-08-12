@@ -203,7 +203,7 @@ window.customElements.define(
           },
         });
       } else {
-        this.provider = new GeoSearch.OpenStreetMapProvider();
+        this.provider = null;
       }
 
       this.inferencePanel.addEventListener("close-panel", () => {
@@ -652,6 +652,7 @@ window.customElements.define(
     }
 
     geocodeThis = (e) => {
+      if (!this.provider) return;
       const text = e;
       if (text.length >= 5) {
         this.provider.search({ query: text }).then((data) => {
