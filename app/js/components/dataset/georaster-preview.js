@@ -12,8 +12,9 @@ import "../../libs/geoblaze/geoblaze.web.min.js";
 const template = (obj) => /*html*/ `
   <link rel="stylesheet" href="./js/libs/leaflet/leaflet.css"/>
   <div id="map"></div>
+`;
 
-const defaultGeoJsonStyle =  {
+const defaultGeoJsonStyle = {
   color: '#555555',
   weight: 2,
   opacity: 1,
@@ -21,11 +22,10 @@ const defaultGeoJsonStyle =  {
   fillOpacity: 0.3
 };
 
-const defaultGeoJsonStyleHidden =  {
+const defaultGeoJsonStyleHidden = {
   opacity: 0,
   fillOpacity: 0
 };
-`;
 
 window.customElements.define(
   "georaster-preview",
@@ -83,6 +83,8 @@ window.customElements.define(
         }).addTo(this.map);
         return;
       }
+      L.tileLayer(basemap, { attribution, basemap: true }).addTo(this.map);
+    };
 
     loadGeorasterForImageAndLabel = (image, label) => {
       // Remove loaded layers
