@@ -73,17 +73,16 @@ window.customElements.define(
         attribution =
           '&copy; <a href="https://www.mapbox.com/about/maps/">Mapbox</a>';
       } else {
-        basemap = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
-        attribution =
-          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>';
+        L.tileLayer.wms("/geofm-geoserver/geoserver/wms", {
+          layers: "basemap:world",
+          format: "image/png",
+          transparent: false,
+          attribution: "© Natural Earth",
+          name: "basemap",
+          basemap: true,
+        }).addTo(this.map);
+        return;
       }
-
-      L.tileLayer(basemap, {
-        attribution: attribution,
-        name: "basemap",
-        basemap: true,
-      }).addTo(this.map);
-    };
 
     loadGeorasterForImageAndLabel = (image, label) => {
       // Remove loaded layers

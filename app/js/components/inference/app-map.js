@@ -211,9 +211,8 @@ window.customElements.define(
           lng: -95.358421,
         },
         zoom: 10,
-        basemap: "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-        attribution:
-          '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+        basemap: null,
+        attribution: "© Natural Earth",
       };
 
       const mapConfig = { ...defaultOptions, ...options };
@@ -1247,11 +1246,12 @@ window.customElements.define(
       } else if (validMapboxToken) {
         mapSettings.selectedImageryProviderViewModel = mapboxViewModel;
       } else {
-        const osmLayer = new Cesium.OpenStreetMapImageryProvider({
-          url: "https://a.tile.openstreetmap.org/",
+        const wmsLayer = new Cesium.WebMapServiceImageryProvider({
+          url: "/geofm-geoserver/geoserver/wms",
+          layers: "basemap:world",
+          parameters: { transparent: false, format: "image/png" },
         });
-
-        mapSettings.imageryProvider = osmLayer;
+        mapSettings.imageryProvider = wmsLayer;
       }
 
       this.map = new Cesium.Viewer(
