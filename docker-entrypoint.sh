@@ -23,6 +23,18 @@ else
   rm $LOCAL_NGINX_CONFIG_PATH $LOCAL_WITH_SSL_NGINX_CONFIG_PATH
 fi
 
+# Determine the DNS resolver nginx should use at runtime.
+# In Kubernetes/OpenShift the pod's /etc/resolv.conf points at the
+# cluster DNS (CoreDNS/kube-dns). We read the first nameserver from it
+# unless DNS_RESOLVER was already provided as an env var.
+if [[ -z "${DNS_RESOLVER}" ]]; then
+  DNS_RESOLVER=$(awk '/^nameserver/ {print $2; exit}' /etc/resolv.conf)
+fi
+# Fall back to the common kube-dns ClusterIP if resolv.conf had nothing.
+DNS_RESOLVER=${DNS_RESOLVER:-10.96.0.10}
+export DNS_RESOLVER
+echo "Using DNS resolver: $DNS_RESOLVER"
+
 configPaths=("$NGINX_CONFIG_PATH" "/home/geostudio/env.json")
 
 auto_envsubst() {
